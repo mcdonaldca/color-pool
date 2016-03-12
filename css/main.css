@@ -31,7 +31,7 @@ header {
   width: 100%;
   height: calc(50% - 30px); }
 
-canvas {
+#canvas {
   position: absolute;
   top: 50%;
   left: 50%;

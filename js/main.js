@@ -1,29 +1,42 @@
-window.onload = initializePool;
+function Pool() {
+  this.content = document.getElementById("content");
+  this.canvas = document.getElementById("canvas");
+  this.context = canvas.getContext("2d");
 
-function initializePool() {
-  content = document.getElementById("content");
-  canvas = document.getElementById("canvas");
-  context = canvas.getContext('2d');
+  this.ratio = 8;
 
-  ratio = 8;
+  this.setImage("img/mercury.png");
+}
 
+Pool.prototype.setImage = function(imageSrc) {
   var image = new Image();
-  image.onload = drawImage;
-  image.src = "img/mercury.png";
+  image.onload = this.drawImageOnLoad();
+  image.src = imageSrc;
+};
 
-  function drawImage() {
-    width = image.width * ratio
-    height = image.height * ratio
-    canvas.width = width;
-    canvas.height = height;
-    context.imageSmoothingEnabled = false;
-    context.drawImage(image, 0, 0, width, height);
+Pool.prototype.setColors = function(colors) {
+  this.colors = colors;
+}
 
-    colors = {}
+Pool.prototype.drawImageOnLoad = function() {
+  var pool = this;
+
+  return function() {
+    var image = this;
+    var width = image.width * pool.ratio
+    var height = image.height * pool.ratio
+
+    pool.canvas.width = width;
+    pool.canvas.height = height;
+    pool.context.imageSmoothingEnabled = false;
+    pool.context.drawImage(image, 0, 0, width, height);
+
+    colors = {};
 
     for (var x = 0; x < image.width; x++) {
       for (var y = 0; y < image.height; y++) {
-        var colorData = context.getImageData(x * ratio, y * ratio, 1, 1).data;
+        var colorData = 
+          pool.context.getImageData(x * pool.ratio, y * pool.ratio, 1, 1).data;
         var r = colorData[0],
             g = colorData[1],
             b = colorData[2],
@@ -46,7 +59,7 @@ function initializePool() {
                         g.toString() + ", " +
                         b.toString() + ", " + 
                         (a / 255).toString() + ")";
-            content.appendChild(colorEl);
+            pool.content.appendChild(colorEl);
           }
 
           colors[r][g][b].push([x, y]);
@@ -54,10 +67,16 @@ function initializePool() {
       }
     }
 
-    /* for (var key in colors) {
-      if (colors.hasOwnProperty(key)) {
-        console.log(key + " -> " + colors[key]);
-      }
-    } */
-  }
+    pool.setColors(colors);
+  };
+};
+    
+window.onload = function() {
+  var pool = new Pool();
 }
+
+/* for (var key in colors) {
+  if (colors.hasOwnProperty(key)) {
+    console.log(key + " -> " + colors[key]);
+  }
+} */

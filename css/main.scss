@@ -3,11 +3,42 @@
   padding: 0;
 }
 
+header {
+  position: relative;
+  height: 60px;
+  background-color: #666;
+  width: 100%;
+
+  .images {
+    position: absolute;
+
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    .image-button {
+      position: relative;
+      background-color: #222;
+      float: left;
+      width: 40px;
+      height: 40px;
+      margin: 5px;
+      border-radius: 5px;
+
+      img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
+}
 
 #display, #content {
   position: relative;
   width: 100%;
-  height: 50%;
+  height: calc(50% - 30px);
 }
 
 canvas {

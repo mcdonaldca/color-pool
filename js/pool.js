@@ -4,13 +4,19 @@ function Pool() {
   this.context = canvas.getContext("2d");
 
   this.ratio = 8;
-  this.setImage("img/mercury.png");
+  this.setImage("img/test.png");
+
+  this.colorClickStack = [];
 
   var that = this;
   $(".image-button").click(function() {
     var imageName = $(this).children()[0];
     that.setImage(imageName.src);
   });
+}
+
+Pool.prototype.addClick = function(colorEl) {
+  console.log(colorEl);
 }
 
 Pool.prototype.setImage = function(imageSrc) {
@@ -60,6 +66,10 @@ Pool.prototype.drawImageOnLoad = function() {
 
             var colorEl = document.createElement("div");
             colorEl.className = "color";
+            colorEl.setAttribute("r", r);
+            colorEl.setAttribute("g", g);
+            colorEl.setAttribute("b", b);
+            colorEl.setAttribute("a", a / 255);
             colorEl.style.backgroundColor = 
               "rgba(" + r.toString() + ", " + 
                         g.toString() + ", " +
@@ -74,6 +84,9 @@ Pool.prototype.drawImageOnLoad = function() {
     }
 
     pool.setColors(colors);
+    $(".color").click(function() {
+      console.log(this.getAttribute("r"));
+    })
   };
 };
     

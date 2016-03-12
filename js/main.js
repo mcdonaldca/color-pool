@@ -1,13 +1,15 @@
-window.onload = function() {
-  var canvas = document.getElementById("canvas");
-  var context = canvas.getContext('2d');
-  context.imageSmoothingEnabled = false; /// future
+window.onload = initializePool;
 
-  ratio = 4;
+function initializePool() {
+  content = document.getElementById("content");
+  canvas = document.getElementById("canvas");
+  context = canvas.getContext('2d');
+
+  ratio = 8;
 
   var image = new Image();
   image.onload = drawImage;
-  image.src = "img/venus.png";
+  image.src = "img/mercury.png";
 
   function drawImage() {
     width = image.width * ratio
@@ -36,6 +38,15 @@ window.onload = function() {
           }
           if (!(b in colors[r][g])) {
             colors[r][g][b] = []
+
+            var colorEl = document.createElement("div");
+            colorEl.className = "color";
+            colorEl.style.backgroundColor = 
+              "rgba(" + r.toString() + ", " + 
+                        g.toString() + ", " +
+                        b.toString() + ", " + 
+                        (a / 255).toString() + ")";
+            content.appendChild(colorEl);
           }
 
           colors[r][g][b].push([x, y]);
@@ -43,6 +54,10 @@ window.onload = function() {
       }
     }
 
-    console.log(colors);
+    /* for (var key in colors) {
+      if (colors.hasOwnProperty(key)) {
+        console.log(key + " -> " + colors[key]);
+      }
+    } */
   }
 }

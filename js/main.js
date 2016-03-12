@@ -1,14 +1,20 @@
 function Pool() {
-  this.content = document.getElementById("content");
-  this.canvas = document.getElementById("canvas");
+  this.content = $("#content");
+  this.canvas = $("#canvas")[0];
   this.context = canvas.getContext("2d");
 
   this.ratio = 8;
-
   this.setImage("img/mercury.png");
+
+  var that = this;
+  $(".image-button").click(function() {
+    var imageName = $(this).children()[0];
+    that.setImage(imageName.src);
+  });
 }
 
 Pool.prototype.setImage = function(imageSrc) {
+  this.content.empty();
   var image = new Image();
   image.onload = this.drawImageOnLoad();
   image.src = imageSrc;
@@ -59,7 +65,7 @@ Pool.prototype.drawImageOnLoad = function() {
                         g.toString() + ", " +
                         b.toString() + ", " + 
                         (a / 255).toString() + ")";
-            pool.content.appendChild(colorEl);
+            pool.content.append(colorEl);
           }
 
           colors[r][g][b].push([x, y]);

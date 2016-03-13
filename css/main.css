@@ -38,10 +38,12 @@ body {
   height: 40px;
   border-radius: 5px;
   background-color: #eee;
+  background-size: 40px 40px;
   font-size: 11px;
-  background-size: 40px 40px; }
+  cursor: pointer; }
   .icon-button.disabled {
-    opacity: .25; }
+    opacity: .25;
+    cursor: default; }
 
 .icon-max {
   background-image: url(../img/icons/max.png); }
@@ -73,7 +75,8 @@ body {
 #display .controls {
   margin: 10px 0 0 10px; }
   #display .controls .icon-button {
-    margin-bottom: 10px; }
+    float: left;
+    margin-right: 10px; }
 #display .ratio-controls {
   position: absolute;
   right: 10px;
@@ -98,7 +101,8 @@ body {
     height: 70px;
     margin: 3px;
     background-color: #444;
-    border-radius: 5px; }
+    border-radius: 5px;
+    cursor: pointer; }
     #content .color-container .color {
       width: 100%;
       font: 14px Bitter;
@@ -114,12 +118,14 @@ body {
       width: 64px;
       height: 64px;
       border: 3px #444 solid; }
-    #content .color-container.merged .color {
-      height: calc(100% - 10px);
-      border-top-left-radius: 5px;
-      border-top-right-radius: 5px;
-      background-color: rgba(68, 68, 68, 0.8); }
-      #content .color-container.merged .color .color-content {
-        padding-top: 22px; }
+    #content .color-container.merged {
+      cursor: default; }
+      #content .color-container.merged .color {
+        height: calc(100% - 10px);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        background-color: rgba(68, 68, 68, 0.8); }
+        #content .color-container.merged .color .color-content {
+          padding-top: 22px; }
 
 /*# sourceMappingURL=main.css.map */

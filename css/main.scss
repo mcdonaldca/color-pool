@@ -52,11 +52,13 @@ body {
   height: 40px;
   border-radius: 5px;
   background-color: #eee;
-  font-size: 11px;
   background-size: 40px 40px;
+  font-size: 11px;
+  cursor: pointer;
 
   &.disabled {
     opacity: .25;
+    cursor: default;
   }
 }
 
@@ -101,7 +103,8 @@ body {
     margin: 10px 0 0 10px;
 
     .icon-button {
-      margin-bottom: 10px;
+      float: left;
+      margin-right: 10px;
     }
   }
 
@@ -136,6 +139,7 @@ body {
     margin: 3px;
     background-color: #444;
     border-radius: 5px;
+    cursor: pointer;
 
     .color {
       width: 100%;
@@ -165,6 +169,8 @@ body {
     }
 
     &.merged {
+      cursor: default;
+
       .color {
         height: calc(100% - 10px);
         border-top-left-radius: 5px;

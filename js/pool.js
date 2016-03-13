@@ -62,6 +62,7 @@ Pool.prototype.colorClick = function(colorEl) {
       // Check if removing this color makes merging invalid
       if (this.colorClickStack.length < 2) {
         this.mergeButton.addClass("disabled");
+        this.toggleButton.addClass("disabled");
       }
     }
   } else {
@@ -82,6 +83,7 @@ Pool.prototype.colorClick = function(colorEl) {
     // Check if merging is valid
     if (this.colorClickStack.length == 2) {
       this.mergeButton.removeClass("disabled");
+      this.toggleButton.removeClass("disabled");
     }
   }
 }
@@ -368,6 +370,7 @@ Pool.prototype.clearColorClickStack = function() {
 
   // Disable actions that require selected colors
   this.mergeButton.addClass("disabled");
+  this.toggleButton.addClass("disabled");
 }
 
 

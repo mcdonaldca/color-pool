@@ -61,6 +61,11 @@ Pool.prototype.colorClick = function(colorEl) {
     var i = this.colorClickStack.indexOf(clickedColor);
     if (i != -1) {
       this.colorClickStack.splice(i, 1);
+
+      // Check if removing this color makes merging invalid
+      if (this.colorClickStack.length < 2) {
+        this.mergeButton.addClass("disabled");
+      }
     }
   } else {
     // Get clicked color
@@ -76,6 +81,11 @@ Pool.prototype.colorClick = function(colorEl) {
     
     // Add color to stack
     this.colorClickStack.push(clickedColor);
+
+    // Check if merging is valid
+    if (this.colorClickStack.length == 2) {
+      this.mergeButton.removeClass("disabled");
+    }
   }
 }
 
@@ -253,6 +263,11 @@ Pool.prototype.setMaxRatio = function() {
     this.ratio = this.maxRatio;
     // We've hit the max, disable up button
     this.ratioUpButton.addClass("disabled");
+    // If we're not also at the minumum, un-disable down
+    // Covers the case where you click min, then click max
+    if (this.ratio != 1) {
+      this.ratioDownButton.removeClass("disabled");
+    }
     this.drawDisplay();
   }
 };
@@ -297,6 +312,11 @@ Pool.prototype.setMinRatio = function() {
     this.ratio = 1;
     // We've hit the min, disabled the down button
     this.ratioDownButton.addClass("disabled");
+    // If we're not also at the maximum, un-disable up
+    // Covers the case where you click max, then click min
+    if (this.ratio != this.maxRatio) {
+      this.ratioUpButton.removeClass("disabled");
+    }
     this.drawDisplay();
   }
 };
@@ -346,6 +366,9 @@ Pool.prototype.clearColorClickStack = function() {
   $(".selected").removeClass("selected");
   $(".selected-source .color-content").empty();
   $(".selected-source").removeClass("selected-source");
+
+  // Disable actions that require selected colors
+  this.mergeButton.addClass("disabled");
 }
 
 

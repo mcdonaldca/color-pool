@@ -602,19 +602,27 @@ Pool.prototype.initializeClickEvents = function() {
 
   $("#ratio-max").click(function() {
     pool.setMaxRatio();
-  })
+  });
 
   $("#ratio-up").click(function() {
     pool.incRatio();
-  })
+  });
 
   $("#ratio-down").click(function() {
     pool.decRatio();
-  })
+  });
 
   $("#ratio-min").click(function() {
     pool.setMinRatio();
-  })
+  });
+
+  $("#settings").click(function() {
+    $(".overlay").slideDown(350);
+  });
+
+  $("#close").click(function() {
+    $(".overlay").slideUp(200);
+  });
 }
 
 

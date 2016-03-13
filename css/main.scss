@@ -43,6 +43,7 @@ header {
 
     .icon-button {
       float: left;
+      background-color: #666;
       margin: 5px;
     }
   }
@@ -60,10 +61,6 @@ body {
   background-size: 40px 40px;
   font-size: 11px;
   cursor: pointer;
-
-  &.dark {
-    background-color: #666;
-  }
 
   &.disabled {
     opacity: .25;
@@ -107,6 +104,10 @@ body {
 
 .icon-settings-dark {
   background-image: url(../img/icons/settings-dark.png);
+}
+
+.icon-close-light {
+  background-image: url(../img/icons/close-light.png);
 }
 
 #display, #content {
@@ -270,6 +271,63 @@ body {
         .color-content {
           padding-top: 22px;
         }
+      }
+    }
+  }
+}
+
+.overlay {
+  position: absolute;
+  display: none;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .75);
+  box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+  z-index: 10;
+
+  &.show {
+    display: block;
+  }
+
+  .settings-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background-color: #ddd;
+    width: 600px;
+    height: 300px;
+    border-radius: 5px;
+
+    color: #222;
+    font: 14px Bitter;
+
+    .settings-header {
+      box-sizing: border-box;
+      width: 100%;
+      height: 40px;
+      padding-top: 8px;
+      margin-bottom: 20px;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+
+      background-color: #666;
+      text-align: center;
+      color: #eee;
+      font-size: 18px;
+
+      .icon-button {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        background-color: #666;
+        width: 25px;
+        height: 25px;
+        background-repeat: no-repeat;
+        background-size: 25px 25px;
       }
     }
   }

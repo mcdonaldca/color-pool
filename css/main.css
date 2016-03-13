@@ -84,11 +84,20 @@ body {
   #display .ratio-controls .icon-button {
     margin-top: 10px; }
 
-#canvas {
+#canvas, #canvas-toggle {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%); }
+
+#canvas {
+  z-index: 1; }
+
+#canvas-toggle {
+  display: none; }
+  #canvas-toggle.visible {
+    display: block;
+    z-index: 0; }
 
 #content {
   overflow-y: auto;

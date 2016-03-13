@@ -5,8 +5,13 @@ function Pool() {
   this.content = $("#content");
   this.displayCanvas = $("#canvas")[0];
   this.displayContext = this.displayCanvas.getContext("2d");
-  this.manipCanvas = $("#manip")[0];
+  this.manipCanvas = document.createElement("canvas");
   this.manipContext = this.manipCanvas.getContext("2d");
+
+  this.toggleCanvas = $("#canvas-toggle")[0];
+  this.toggleContext = this.toggleCanvas.getContext("2d");
+  this.toggleManipCanvas = document.createElement("canvas");
+  this.toggleManipContext = this.toggleManipCanvas.getContext("2d");
 
   // Set up various buttons to control disabled state
   this.mergeButton = $("#merge");
@@ -183,7 +188,7 @@ Pool.prototype.drawImageOnLoad = function(image) {
   }
 
   // Draw the scaled image on the display
-  this.drawDisplay();
+  this.drawDisplay(this.manipCanvas, this.displayCanvas, this.displayContext);
 };
 
 
@@ -194,36 +199,60 @@ Pool.prototype.mergeColors = function() {
 
   // Check that at least two colors have been selected
   if (stackHeight >= 2) {
-    // Find the colors we'll be going to -> from
-    var source = this.colorClickStack[0];
-    var colorsToMerge = this.colorClickStack.splice(1, stackHeight -1 );
+    var imageData = this.generateNewImageData(this.colorClickStack, true);
+    
+    // Draw new image data to the manipulation canvas
+    this.manipContext.imageSmoothingEnabled = false;
+    this.manipContext.putImageData(imageData, 0, 0);
 
-    // Find original image dimensions
-    var imageWidth = this.manipCanvas.width;
-    var imageHeight = this.manipCanvas.height;
-    // Get our current image data
-    var imageData = this.manipContext.getImageData(0, 0, imageWidth, imageHeight);
-    var data = imageData.data;
+    // Draw the updated display
+    this.drawDisplay(this.manipCanvas, this.displayCanvas, this.displayContext);
 
-    for(var n = 0; n < colorsToMerge.length; n++) {
-      var mergeFrom = colorsToMerge[n];
+    // Clear the color click stack
+    this.clearColorClickStack();
+  }
+};
 
-      // Iterate through all locations of departing color
-      for (var i = 0; i < mergeFrom.locations.length; i++) {
-        var x = mergeFrom.locations[i][0],
-            y = mergeFrom.locations[i][1];
 
-        // Calculate the beginning of our values in the data array
-        var calcIndex = (x * 4) + (4 * imageWidth * y);
 
-        data[calcIndex] = source.r;
-        data[calcIndex + 1] = source.g;
-        data[calcIndex + 2] = source.b;
+// Uses stack of colors to generate new imageData
+// @param changeData: only alter color values if true
+Pool.prototype.generateNewImageData = function(colorStack, changeData) {
+  stackHeight = colorStack.length;
 
+  // Find the colors we'll be going to -> from
+  var source = colorStack[0];
+  var colorsToMerge = colorStack.splice(1, stackHeight -1 );
+
+  // Find original image dimensions
+  var imageWidth = this.manipCanvas.width;
+  var imageHeight = this.manipCanvas.height;
+  // Get our current image data
+  var imageData = this.manipContext.getImageData(0, 0, imageWidth, imageHeight);
+  var data = imageData.data;
+
+  for(var n = 0; n < colorsToMerge.length; n++) {
+    var mergeFrom = colorsToMerge[n];
+
+    // Iterate through all locations of departing color
+    for (var i = 0; i < mergeFrom.locations.length; i++) {
+      var x = mergeFrom.locations[i][0],
+          y = mergeFrom.locations[i][1];
+
+      // Calculate the beginning of our values in the data array
+      var calcIndex = (x * 4) + (4 * imageWidth * y);
+
+      data[calcIndex] = source.r;
+      data[calcIndex + 1] = source.g;
+      data[calcIndex + 2] = source.b;
+
+      if (changeData) {
         // Add the location to the new source color
         source.addLocation(x, y);
       }
+    }
 
+    if (changeData) {
       // Remove the merged color from our color collection
       this.colors[mergeFrom.r][mergeFrom.g][mergeFrom.b] = undefined;
       // Let the color set up for merged state
@@ -232,28 +261,66 @@ Pool.prototype.mergeColors = function() {
       $(mergeFrom.el).remove()[0];
       this.content.append(mergeFrom.el);
     }
-    
-    // Draw new image data to the manipulation canvas
-    this.manipContext.imageSmoothingEnabled = false;
-    this.manipContext.putImageData(imageData, 0, 0);
-
-    // Draw the updated display
-    this.drawDisplay();
-
-    // Clear the color click stack
-    this.clearColorClickStack();
-
   }
-};
+  return imageData;
+}
 
 
 
 // Called whenever the toggle history action is fired.
 Pool.prototype.toggleToggleMode = function() {
-  this.toggleMode = !this.toggleMode;
-  console.log(this.toggleMode);
-  this.display.toggleClass("toggle-mode");
-  this.content.toggleClass("toggle-mode");
+  if (this.colorClickStack.length > 1) {
+    this.toggleMode = !this.toggleMode;
+    this.display.toggleClass("toggle-mode");
+    this.content.toggleClass("toggle-mode");
+
+    if (this.toggleMode) {
+      this.setUpToggleDisplay();
+    } else {
+      this.cleanUpToggleDisplay();
+    }
+  }
+};
+
+
+
+// Called when toggle mode is active and we're toggling between changes
+Pool.prototype.toggleChange = function() {
+  var z = $(this.toggleCanvas).css("z-index");
+
+  if (z == "0") {
+    $(this.toggleCanvas).css("z-index", "2");
+  } else {
+    $(this.toggleCanvas).css("z-index", "0");
+  }
+};
+
+
+
+// TODO: make these comments accurate
+// Called when a toggle canvas should be initiated
+Pool.prototype.setUpToggleDisplay = function() {
+  this.toggleManipCanvas.width = this.manipCanvas.width;
+  this.toggleManipCanvas.height = this.manipCanvas.height;
+
+  var selectedColors = this.colorClickStack.slice(0);
+  var imageData = this.generateNewImageData(selectedColors, false);
+
+  // Draw new image data to the manipulation canvas
+  this.toggleManipContext.imageSmoothingEnabled = false;
+  this.toggleManipContext.putImageData(imageData, 0, 0);
+
+  this.drawDisplay(this.toggleManipCanvas, this.toggleCanvas, this.toggleContext);
+
+  $(this.toggleCanvas).css("z-index", "0");
+  $(this.toggleCanvas).addClass("visible");
+};
+
+
+
+// Called when a toggle canvas should be cleaned up
+Pool.prototype.cleanUpToggleDisplay = function() {
+  $(this.toggleCanvas).removeClass("visible");
 };
 
 
@@ -269,7 +336,11 @@ Pool.prototype.setMaxRatio = function() {
     if (this.ratio != 1) {
       this.ratioDownButton.removeClass("disabled");
     }
-    this.drawDisplay();
+
+    this.drawDisplay(this.manipCanvas, this.displayCanvas, this.displayContext);
+    if (this.toggleMode) {
+      this.drawDisplay(this.toggleManipCanvas, this.toggleCanvas, this.toggleContext);
+    }
   }
 };
 
@@ -285,7 +356,10 @@ Pool.prototype.incRatio = function() {
       this.ratioDownButton.removeClass("disabled");
     }
 
-    this.drawDisplay();
+    this.drawDisplay(this.manipCanvas, this.displayCanvas, this.displayContext);
+    if (this.toggleMode) {
+      this.drawDisplay(this.toggleManipCanvas, this.toggleCanvas, this.toggleContext);
+    }
   }
 };
 
@@ -301,7 +375,10 @@ Pool.prototype.decRatio = function() {
       this.ratioUpButton.removeClass("disabled");
     }
 
-    this.drawDisplay();
+    this.drawDisplay(this.manipCanvas, this.displayCanvas, this.displayContext);
+    if (this.toggleMode) {
+      this.drawDisplay(this.toggleManipCanvas, this.toggleCanvas, this.toggleContext);
+    }
   }
 };
 
@@ -318,7 +395,10 @@ Pool.prototype.setMinRatio = function() {
     if (this.ratio != this.maxRatio) {
       this.ratioUpButton.removeClass("disabled");
     }
-    this.drawDisplay();
+    this.drawDisplay(this.manipCanvas, this.displayCanvas, this.displayContext);
+    if (this.toggleMode) {
+      this.drawDisplay(this.toggleManipCanvas, this.toggleCanvas, this.toggleContext);
+    }
   }
 };
 
@@ -338,23 +418,16 @@ Pool.prototype.calculateMaxRatio = function() {
 
 
 // Called anytime the display should be redrawn
-Pool.prototype.drawDisplay = function() {
+Pool.prototype.drawDisplay = function(manipCanvas, displayCanvas, displayContext) {
   // Set the display canvas to the scaled proportions
   // This canvas will change size with the display ratio
-  this.displayCanvas.width = this.manipCanvas.width * this.ratio;
-  this.displayCanvas.height = this.manipCanvas.height * this.ratio;
+  displayCanvas.width = manipCanvas.width * this.ratio;
+  displayCanvas.height = manipCanvas.height * this.ratio;
 
   // Scale the display canvas & draw the manipulation canvas content
-  this.displayContext.imageSmoothingEnabled = false;
-  this.displayContext.scale(this.ratio, this.ratio);
-  this.displayContext.drawImage(this.manipCanvas, 0, 0);
-}
-
-
-
-// Called when toggle mode is active and we're toggling between changes
-Pool.prototype.toggleChange = function() {
-  console.log('toggle');
+  displayContext.imageSmoothingEnabled = false;
+  displayContext.scale(this.ratio, this.ratio);
+  displayContext.drawImage(manipCanvas, 0, 0);
 }
 
 
@@ -391,7 +464,9 @@ Pool.prototype.initializeClickEvents = function() {
     // When "m" is pressed, merge colors
     if (e.which == "77" && !pool.toggleMode) { 
       pool.mergeColors();
-    } else if (e.which == "84" && pool.toggleMode) {
+    } else if (e.which == "84") {
+      pool.toggleToggleMode();
+    } else if (e.which == "32" && pool.toggleMode) {
       pool.toggleChange();
     }
   }

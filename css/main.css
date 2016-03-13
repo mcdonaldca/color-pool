@@ -106,7 +106,9 @@ body {
   opacity: 0;
   transition: opacity .2s ease-in-out; }
 #display .controls {
-  margin: 10px 0 0 10px; }
+  position: absolute;
+  left: 10px;
+  top: 10px; }
   #display .controls .icon-button {
     float: left;
     margin-right: 10px; }

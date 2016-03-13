@@ -491,6 +491,7 @@ Pool.prototype.updateComparisonChart = function() {
 
     var drawColors = this.colorClickStack.slice(0).reverse();
 
+    context.clearRect(0, 0, canvas.width, canvas.height);
     for (var i = 0; i < colorNum; i++) {
       var startingAngle = 0;
       var endingAngle = 0;

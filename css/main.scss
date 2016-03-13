@@ -189,11 +189,18 @@ body {
     transition: width .35s ease-in-out;
   }
 
-  canvas {
+  canvas, .instructions {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+
+  .instructions {
+    width: 130px;
+    text-align: center;
+    color: #eee;
+    font: 14px Bitter;
   }
 }
 

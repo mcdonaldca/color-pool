@@ -136,11 +136,16 @@ body {
   #comparison.visible {
     width: 250px;
     transition: width .35s ease-in-out; }
-  #comparison canvas {
+  #comparison canvas, #comparison .instructions {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); }
+  #comparison .instructions {
+    width: 130px;
+    text-align: center;
+    color: #eee;
+    font: 14px Bitter; }
 
 #content {
   overflow-y: auto;

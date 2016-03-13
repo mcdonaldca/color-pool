@@ -445,10 +445,12 @@ Pool.prototype.drawDisplay = function(manipCanvas, displayCanvas, displayContext
 // Called whenever the comparison chart should be updated
 Pool.prototype.updateComparisonChart = function() {
   var colorNum = this.colorClickStack.length;
-  var canvas = $("#comparison").children()[0]
+  var canvas = $("#comparison").children()[0];
+  var instructions = $("#comparison").children()[1];
   var context = canvas.getContext("2d");
 
   if (colorNum > 0) {
+    $(instructions).hide();
 
     var centerX = Math.floor(canvas.width / 2);
     var centerY = Math.floor(canvas.height / 2);
@@ -489,6 +491,7 @@ Pool.prototype.updateComparisonChart = function() {
     }
   } else {
     context.clearRect(0, 0, canvas.width, canvas.height);
+    $(instructions).show();
   }
 }
 

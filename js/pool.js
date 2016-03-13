@@ -1,16 +1,17 @@
 // Pool object to manage appliation
 function Pool() {
   // Set up access to various canvases & contexts
+  this.display = $("#display");
   this.content = $("#content");
   this.displayCanvas = $("#canvas")[0];
-  this.manipCanvas = $("#manip")[0];
   this.displayContext = this.displayCanvas.getContext("2d");
+  this.manipCanvas = $("#manip")[0];
   this.manipContext = this.manipCanvas.getContext("2d");
 
   // Set the initial display ratio (can be adjusted via UI)
   this.ratio = 10;
   // Display initial image
-  this.setImageWithSrc("img/test.png");
+  this.setImageWithSrc("img/venus.png");
 
   // Tracks the order of items clicked in the stack
   this.colorClickStack = [];
@@ -192,7 +193,8 @@ Pool.prototype.mergeColors = function() {
 
 // Called whenever the toggle history action is fired.
 Pool.prototype.toggleChange = function() {
-  
+  this.display.toggleClass("toggle-mode");
+  this.content.toggleClass("toggle-mode");
 }
 
 

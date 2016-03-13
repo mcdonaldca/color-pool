@@ -35,10 +35,28 @@ header {
   }
 }
 
+body {
+  overflow: hidden;
+}
+
 #display, #content {
   position: relative;
   width: 100%;
   height: calc(50% - 30px);
+  transition: height .2s ease-in-out;
+}
+
+#display.toggle-mode {
+  height: calc(100% - 60px);
+  transition: height .3s ease-in-out;
+}
+
+#content.toggle-mode {
+  height: 0;
+  padding: 0;
+  transition: 
+    height .3s ease-in-out, 
+    padding .3s ease-in-out;
 }
 
 #canvas {
@@ -60,10 +78,13 @@ header {
     height: 70px;
     margin: 3px;
     background-color: #444;
+    border-radius: 5px;
 
     .color {
       width: 100%;
       height: calc(100% - 10px);
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
     }
 
     &.merged {

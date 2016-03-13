@@ -135,7 +135,7 @@ body {
   }
 
   &.comparison-visible {
-    width: calc(100% - 300px);
+    width: calc(100% - 250px);
     transition: all .35s ease-in-out;
   }
 }
@@ -172,8 +172,15 @@ body {
   transition: width .2s ease-in-out;
 
   &.visible {
-    width: 300px;
+    width: 250px;
     transition: width .35s ease-in-out;
+  }
+
+  canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 

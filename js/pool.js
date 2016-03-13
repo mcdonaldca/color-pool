@@ -58,40 +58,46 @@ Pool.prototype.colorClick = function(colorEl) {
 
   if (isSource) {
     this.clearColorClickStack();
-  } else if (isSelected) {
-    $(colorEl).removeClass("selected");
-    var clickedColor = this.colors[r][g][b];
+  } else {
+    if (isSelected) {
+      $(colorEl).removeClass("selected");
+      var clickedColor = this.colors[r][g][b];
 
-    // Remove color from stack
-    var i = this.colorClickStack.indexOf(clickedColor);
-    if (i != -1) {
-      this.colorClickStack.splice(i, 1);
+      // Remove color from stack
+      var i = this.colorClickStack.indexOf(clickedColor);
+      if (i != -1) {
+        this.colorClickStack.splice(i, 1);
 
-      // Check if removing this color makes merging invalid
-      if (this.colorClickStack.length < 2) {
-        this.mergeButton.addClass("disabled");
-        this.toggleButton.addClass("disabled");
+        // Check if removing this color makes merging invalid
+        if (this.colorClickStack.length < 2) {
+          this.mergeButton.addClass("disabled");
+          this.toggleButton.addClass("disabled");
+        }
+      }
+    } else {
+      // Get clicked color
+      var clickedColor = this.colors[r][g][b];
+
+      // If it's the first item clicked, it should be the source
+      if (this.colorClickStack.length == 0) {
+        clickedColor.setSourceSelection();
+      // Otherwise, it's a merger
+      } else {
+        clickedColor.el.className += " selected";
+      }
+      
+      // Add color to stack
+      this.colorClickStack.push(clickedColor);
+
+      // Check if merging is valid
+      if (this.colorClickStack.length == 2) {
+        this.mergeButton.removeClass("disabled");
+        this.toggleButton.removeClass("disabled");
       }
     }
-  } else {
-    // Get clicked color
-    var clickedColor = this.colors[r][g][b];
 
-    // If it's the first item clicked, it should be the source
-    if (this.colorClickStack.length == 0) {
-      clickedColor.setSourceSelection();
-    // Otherwise, it's a merger
-    } else {
-      clickedColor.el.className += " selected";
-    }
-    
-    // Add color to stack
-    this.colorClickStack.push(clickedColor);
-
-    // Check if merging is valid
-    if (this.colorClickStack.length == 2) {
-      this.mergeButton.removeClass("disabled");
-      this.toggleButton.removeClass("disabled");
+    if (this.compareMode) {
+      this.updateComparisonChart();
     }
   }
 }
@@ -436,12 +442,68 @@ Pool.prototype.drawDisplay = function(manipCanvas, displayCanvas, displayContext
 
 
 
+// Called whenever the comparison chart should be updated
+Pool.prototype.updateComparisonChart = function() {
+  var colorNum = this.colorClickStack.length;
+  var canvas = $("#comparison").children()[0]
+  var context = canvas.getContext("2d");
+
+  if (colorNum > 0) {
+
+    var centerX = Math.floor(canvas.width / 2);
+    var centerY = Math.floor(canvas.height / 2);
+
+    var sourceColorRadius = Math.floor(canvas.width / 4);
+    var mergeColorRadius = Math.floor(canvas.width / 2);
+
+    var startingAngle = 0;
+    var arcSize = (2 * Math.PI) / (colorNum - 1);
+
+    var drawColors = this.colorClickStack.slice(0).reverse();
+
+    for (var i = 0; i < colorNum; i++) {
+      var startingAngle = 0;
+      var endingAngle = 0;
+      if (i == colorNum - 1) {
+        endingAngle = 2 * Math.PI;
+      } else {
+        startingAngle = arcSize * (i - 1);
+        endingAngle = startingAngle + arcSize;
+      }
+
+      var radius = mergeColorRadius;
+      if (i == colorNum - 1) {
+        radius = sourceColorRadius;
+      }
+
+      context.beginPath();
+      context.moveTo(centerX, centerY);
+      context.arc(centerX, centerY, radius, startingAngle, endingAngle, false);
+      context.closePath();
+
+      var r = drawColors[i].r;
+      var g = drawColors[i].g;
+      var b = drawColors[i].b;
+      context.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+      context.fill();
+    }
+  } else {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+
+
 // Called whenever the toggle history action is fired.
 Pool.prototype.toggleCompareMode = function() {
   this.compareMode = !this.compareMode;
 
   this.comparison.toggleClass("visible");
   this.display.toggleClass("comparison-visible");
+
+  if (this.compareMode) {
+    this.updateComparisonChart();
+  }
 }
 
 
@@ -458,6 +520,10 @@ Pool.prototype.clearColorClickStack = function() {
   // Disable actions that require selected colors
   this.mergeButton.addClass("disabled");
   this.toggleButton.addClass("disabled");
+
+  if (this.compareMode) {
+    this.updateComparisonChart();
+  }
 }
 
 

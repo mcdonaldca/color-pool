@@ -54,7 +54,7 @@ header {
     #content .color-container.merged {
       background-color: gray; }
       #content .color-container.merged .color {
-        background-color: #444; }
+        background-color: rgba(68, 68, 68, 0.8); }
         #content .color-container.merged .color .color-content {
           color: #aaa;
           text-align: center;

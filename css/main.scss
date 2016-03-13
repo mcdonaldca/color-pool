@@ -100,25 +100,21 @@ body {
   position: relative;
   width: 100%;
   height: calc(50% - 30px);
-  transition: height .2s ease-in-out;
+  transition: all .2s ease-in-out;
 }
 
 #display.toggle-mode {
   height: calc(100% - 60px);
-  transition: height .35s ease-in-out;
+  transition: all .35s ease-in-out;
 }
 
 #content.toggle-mode {
   height: 0;
   padding: 0;
-  transition: 
-    height .3s ease-in-out, 
-    padding .3s ease-in-out;
+  transition: all .35s ease-in-out;
 }
 
 #display {
-  transition: width .2s ease-in-out;
-
   .controls {
     margin: 10px 0 0 10px;
 
@@ -140,7 +136,7 @@ body {
 
   &.comparison-visible {
     width: calc(100% - 300px);
-    transition: width .35s ease-in-out;
+    transition: all .35s ease-in-out;
   }
 }
 

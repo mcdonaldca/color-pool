@@ -10,19 +10,25 @@ function Pool() {
 
   this.colorClickStack = [];
 
-  var that = this;
+  var pool = this;
   $(".image-button").click(function() {
     var imageName = $(this).children()[0];
-    that.setImageWithSrc(imageName.src);
+    pool.setImageWithSrc(imageName.src);
   });
 
   $("#merge").click(function() {
-    that.mergeColors();
+    pool.mergeColors();
   });
 
   $("#toggle").click(function() {
-    that.toggleChange();
+    pool.toggleChange();
   });
+
+  document.onkeydown = function(e) {
+    if (e.which == "77") {
+      pool.mergeColors();
+    }
+  }
 }
 
 Pool.prototype.addClick = function(colorEl) {
@@ -86,16 +92,9 @@ Pool.prototype.drawImageOnLoad = function(image) {
         colors[r][g] = {}
       }
       if (!(b in colors[r][g])) {
-        var colorEl = document.createElement("div");
-        colorEl.className = "color " + r + "-" + g + "-" + b;
-        colorEl.setAttribute("r", r);
-        colorEl.setAttribute("g", g);
-        colorEl.setAttribute("b", b);
-        colorEl.setAttribute("a", a / 255);
-        colorEl.style.backgroundColor = "rgba(" + r + ", " + g + ", " + b + ", " + (a / 255).toString() + ")";
-        this.content.append(colorEl);
-
-        colors[r][g][b] = new Color(colorEl, r, g, b, a);
+        var color = new Color(r, g, b, a);
+        colors[r][g][b] = color;
+        this.content.append(color.el);
       }
 
       var y = Math.floor(i / (image.width * 4));
@@ -106,7 +105,7 @@ Pool.prototype.drawImageOnLoad = function(image) {
 
   this.setColors(colors);
   var pool = this;
-  $(".color").click(function() {
+  $(".color-container").click(function() {
     pool.addClick(this);
   });
 
@@ -138,10 +137,9 @@ Pool.prototype.mergeColors = function() {
       mergeTo.addLocation(x, y);
     }
     this.colors[mergeFrom.r][mergeFrom.g][mergeFrom.b] = undefined;
-    var target = "." + mergeFrom.r + "-" + mergeFrom.g + "-" + mergeFrom.b;
-    var el = $(target).remove()[0];
-    el.className +=  " merged";
-    this.content.append(el);
+    mergeFrom.setMerged();
+    $(mergeFrom.el).remove()[0];
+    this.content.append(mergeFrom.el);
     
     this.manipContext.imageSmoothingEnabled = false;
     this.manipContext.putImageData(imageData, 0, 0);

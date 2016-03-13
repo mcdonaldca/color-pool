@@ -54,11 +54,30 @@ header {
   padding: 10px;
   background-color: #eee;
 
-  .color {
+  .color-container {
     float: left;
-    margin: 3px;
     width: 70px;
     height: 70px;
+    margin: 3px;
     background-color: #444;
+
+    .color {
+      width: 100%;
+      height: calc(100% - 10px);
+    }
+
+    &.merged {
+      background-color: gray;
+
+      .color {
+        background-color: #444;
+
+        .color-content {
+          color: #aaa;
+          text-align: center;
+          padding-top: 20px;
+        }
+      }
+    }
   }
 }

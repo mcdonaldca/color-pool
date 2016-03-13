@@ -42,11 +42,22 @@ header {
   box-sizing: border-box;
   padding: 10px;
   background-color: #eee; }
-  #content .color {
+  #content .color-container {
     float: left;
-    margin: 3px;
     width: 70px;
     height: 70px;
+    margin: 3px;
     background-color: #444; }
+    #content .color-container .color {
+      width: 100%;
+      height: calc(100% - 10px); }
+    #content .color-container.merged {
+      background-color: gray; }
+      #content .color-container.merged .color {
+        background-color: #444; }
+        #content .color-container.merged .color .color-content {
+          color: #aaa;
+          text-align: center;
+          padding-top: 20px; }
 
 /*# sourceMappingURL=main.css.map */

@@ -5,8 +5,12 @@
 header {
   position: relative;
   height: 60px;
-  background-color: #666;
-  width: 100%; }
+  width: 100%;
+  background-color: #666; }
+  header .logo {
+    padding: 9px 0 0 10px;
+    font: 35px Bitter;
+    color: #eee; }
   header .images {
     position: absolute;
     right: 10px;
@@ -36,6 +40,8 @@ body {
   background-color: #eee;
   font-size: 11px;
   background-size: 40px 40px; }
+  .icon-button.disabled {
+    opacity: .25; }
 
 .icon-max {
   background-image: url(../img/icons/max.png); }
@@ -64,6 +70,10 @@ body {
   padding: 0;
   transition: height .3s ease-in-out,  padding .3s ease-in-out; }
 
+#display .controls {
+  margin: 10px 0 0 10px; }
+  #display .controls .icon-button {
+    margin-bottom: 10px; }
 #display .ratio-controls {
   position: absolute;
   right: 10px;
@@ -99,8 +109,9 @@ body {
       #content .color-container.merged .color {
         background-color: rgba(68, 68, 68, 0.8); }
         #content .color-container.merged .color .color-content {
-          color: #aaa;
-          text-align: center;
-          padding-top: 20px; }
+          padding-top: 22px;
+          font: 14px Bitter;
+          color: #ccc;
+          text-align: center; }
 
 /*# sourceMappingURL=main.css.map */

@@ -2,15 +2,15 @@
 <head>
   <title>Color Pool</title>
   <link href='vendor/css/normalize.min.css' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Bitter:400,700,400italic' rel='stylesheet' type='text/css'>
   <link href='css/main.css' rel='stylesheet' type='text/css'>
   <meta name="viewport" content="width=device-width, initial-scale = 1.0">
   <!-- link href='img/favicon.png' rel='icon' type='image/png' -->
 </head>
 <body>
   <header>
-    <div class="controls">
-      <button id="merge">merge</button>
-      <button id="toggle">toggle</button>
+    <div class="logo">
+      Color Pool
     </div>
     <div class="images">
       <div class="image-button"><img src="img/mercury.png"></div>
@@ -19,6 +19,10 @@
     </div>
   </header>
   <div id="display">
+    <div class="controls">
+      <div class="icon-button icon-merge disabled" id="merge">merge</div>
+      <div class="icon-button icon-toggle disabled" id="toggle">toggle</div>
+    </div>
     <canvas id="canvas"></canvas>
     <div class="ratio-controls">
       <div class="icon-button icon-max" id="ratio-max"></div>

@@ -6,8 +6,14 @@
 header {
   position: relative;
   height: 60px;
-  background-color: #666;
   width: 100%;
+  background-color: #666;
+
+  .logo {
+    padding: 9px 0 0 10px;
+    font: 35px Bitter;
+    color: #eee;
+  }
 
   .images {
     position: absolute;
@@ -46,6 +52,10 @@ body {
   background-color: #eee;
   font-size: 11px;
   background-size: 40px 40px;
+
+  &.disabled {
+    opacity: .25;
+  }
 }
 
 .icon-max {
@@ -85,6 +95,14 @@ body {
 }
 
 #display {
+  .controls {
+    margin: 10px 0 0 10px;
+
+    .icon-button {
+      margin-bottom: 10px;
+    }
+  }
+
   .ratio-controls {
     position: absolute;
     right: 10px;
@@ -131,9 +149,10 @@ body {
         background-color: rgba(68, 68, 68, .8);
 
         .color-content {
-          color: #aaa;
+          padding-top: 22px;
+          font: 14px Bitter;
+          color: #ccc;
           text-align: center;
-          padding-top: 20px;
         }
       }
     }

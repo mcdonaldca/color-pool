@@ -21,6 +21,8 @@ function Pool() {
 
   // Tracks the order of items clicked in the stack
   this.colorClickStack = [];
+  // Tracks the last colors merged & changes made
+  this.changeStack = [];
 
   // Set various click and key interactions
   this.initializeClickEvents();
@@ -177,8 +179,9 @@ Pool.prototype.mergeColors = function() {
 
 
 // Called whenever the toggle history action is fired.
-Pool.prototype.toggleChange = function() {
+Pool.prototype.toggleToggleMode = function() {
   this.toggleMode = !this.toggleMode;
+  console.log(this.toggleMode);
   this.display.toggleClass("toggle-mode");
   this.content.toggleClass("toggle-mode");
 };
@@ -251,6 +254,13 @@ Pool.prototype.setRatio = function(ratio) {
 
 
 
+// Called with toggle mode is active and we're toggling between changes
+Pool.prototype.toggleChange = function() {
+  console.log('toggle');
+}
+
+
+
 // Called upon intialization, sets up click handlers
 Pool.prototype.initializeClickEvents = function() {
   var pool = this;
@@ -265,13 +275,15 @@ Pool.prototype.initializeClickEvents = function() {
 
   document.onkeydown = function(e) {
     // When "m" is pressed, merge colors
-    if (e.which == "77") { 
+    if (e.which == "77" && !pool.toggleMode) { 
       pool.mergeColors();
+    } else if (e.which == "84" && pool.toggleMode) {
+      pool.toggleChange();
     }
   }
 
   $("#toggle").click(function() {
-    pool.toggleChange();
+    pool.toggleToggleMode();
   });
 
   $("#ratio-max").click(function() {

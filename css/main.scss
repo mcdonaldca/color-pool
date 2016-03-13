@@ -128,6 +128,18 @@ body {
 }
 
 #display {
+  .instructions {
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    text-align: center;
+    color: #666;
+    font: 12px Bitter;
+    opacity: 0;
+
+    transition: opacity .2s ease-in-out;
+  }
+
   .controls {
     margin: 10px 0 0 10px;
 

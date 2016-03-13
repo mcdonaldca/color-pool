@@ -94,6 +94,15 @@ body {
   padding: 0;
   transition: all .35s ease-in-out; }
 
+#display .instructions {
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  text-align: center;
+  color: #666;
+  font: 12px Bitter;
+  opacity: 0;
+  transition: opacity .1s ease-in-out; }
 #display .controls {
   margin: 10px 0 0 10px; }
   #display .controls .icon-button {

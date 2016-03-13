@@ -294,7 +294,7 @@ Pool.prototype.toggleToggleMode = function() {
 
 
 
-// Called when toggle mode is active and we're toggling between changes
+// Called when toggle mode is active and we're toggling between changes.
 Pool.prototype.toggleChange = function() {
   var z = $(this.toggleCanvas).css("z-index");
 
@@ -307,23 +307,31 @@ Pool.prototype.toggleChange = function() {
 
 
 
-// TODO: make these comments accurate
-// Called when a toggle canvas should be initiated
+// Called when a toggle canvas should be initiated.
 Pool.prototype.setUpToggleDisplay = function() {
+  // Set up the toggle's manipulation canvas.
   this.toggleManipCanvas.width = this.manipCanvas.width;
   this.toggleManipCanvas.height = this.manipCanvas.height;
 
+  // Make a copy of the selected colors array.
   var selectedColors = this.colorClickStack.slice(0);
+  // Use this array (the suggested merge) to generate imageData.
+  // IMPORTANT: pass false so that our suggested merge isn't permanent.
   var imageData = this.generateNewImageData(selectedColors, false);
 
-  // Draw new image data to the manipulation canvas
+  // Draw new image data to the toggle's manipulation canvas.
   this.toggleManipContext.imageSmoothingEnabled = false;
   this.toggleManipContext.putImageData(imageData, 0, 0);
 
+  // Draw the image on the toggle's display canvas.
   this.drawDisplay(this.toggleManipCanvas, this.toggleCanvas, this.toggleContext);
 
+  // Set the toggle display to be not the default.
   $(this.toggleCanvas).css("z-index", "0");
   $(this.toggleCanvas).addClass("visible");
+
+  // Show the text prompt
+  $(this.display.children()[0]).css("opacity", "1");
 };
 
 
@@ -331,6 +339,9 @@ Pool.prototype.setUpToggleDisplay = function() {
 // Called when a toggle canvas should be cleaned up
 Pool.prototype.cleanUpToggleDisplay = function() {
   $(this.toggleCanvas).removeClass("visible");
+
+  // Hide the text prompt
+  $(this.display.children()[0]).css("opacity", "0");
 };
 
 

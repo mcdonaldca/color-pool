@@ -45,22 +45,38 @@ Pool.prototype.colorClick = function(colorEl) {
       b = colorEl.getAttribute("b"),
       a = colorEl.getAttribute("a");
 
-  // Add color to stack
-  // TODO: react differently if color is already in stack
-  var clickedColor = this.colors[r][g][b];
-
-  // If it's the first item clicked, it should be the source
-  if (this.colorClickStack.length == 0) {
-    clickedColor.setSourceSelection();
-  // Otherwise, it's a merger
-  } else {
-    clickedColor.el.className += " selected";
-  }
-  
-  this.colorClickStack.push(clickedColor);
+  var isSource = $(colorEl).hasClass("selected-source");
+  var isSelected = $(colorEl).hasClass("selected");
 
   // Left in for debugging purposes
   console.log("clicked: ", r, g, b);
+
+  if (isSource) {
+    this.clearColorClickStack();
+  } else if (isSelected) {
+    $(colorEl).removeClass("selected");
+    var clickedColor = this.colors[r][g][b];
+
+    // Remove color from stack
+    var i = this.colorClickStack.indexOf(clickedColor);
+    if (i != -1) {
+      this.colorClickStack.splice(i, 1);
+    }
+  } else {
+    // Get clicked color
+    var clickedColor = this.colors[r][g][b];
+
+    // If it's the first item clicked, it should be the source
+    if (this.colorClickStack.length == 0) {
+      clickedColor.setSourceSelection();
+    // Otherwise, it's a merger
+    } else {
+      clickedColor.el.className += " selected";
+    }
+    
+    // Add color to stack
+    this.colorClickStack.push(clickedColor);
+  }
 }
 
 
@@ -212,11 +228,7 @@ Pool.prototype.mergeColors = function() {
     this.drawDisplay();
 
     // Clear the color click stack
-    this.colorClickStack = [];
-    // Remove all tagged colors
-    $(".selected").removeClass("selected");
-    $(".selected-source .color-content").empty();
-    $(".selected-source").removeClass("selected-source");
+    this.clearColorClickStack();
 
   } else {
     console.log("not enough colors clicked");
@@ -319,9 +331,21 @@ Pool.prototype.drawDisplay = function() {
 
 
 
-// Called with toggle mode is active and we're toggling between changes
+// Called when toggle mode is active and we're toggling between changes
 Pool.prototype.toggleChange = function() {
   console.log('toggle');
+}
+
+
+
+// Called when colorClickStack should be cleared 
+Pool.prototype.clearColorClickStack = function() {
+ this.colorClickStack = [];
+
+  // Remove all tagged colors
+  $(".selected").removeClass("selected");
+  $(".selected-source .color-content").empty();
+  $(".selected-source").removeClass("selected-source");
 }
 
 

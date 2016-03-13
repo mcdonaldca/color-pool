@@ -128,7 +128,7 @@ Pool.prototype.drawImageOnLoad = function(image) {
   this.ratio = Math.floor(this.maxRatio / 2);
 
   // Draw the scaled image on the display
-  this.setRatio(this.ratio);
+  this.drawDisplay();
 };
 
 
@@ -136,39 +136,52 @@ Pool.prototype.drawImageOnLoad = function(image) {
 // Called whenever the color merge action is fired
 Pool.prototype.mergeColors = function() {
   stackHeight = this.colorClickStack.length;
+
+  // Check that at least two colors have been selected
   if (stackHeight >= 2) {
+    // Find the colors we'll be going to -> from
     var mergeFrom = this.colorClickStack[stackHeight - 1];
     var mergeTo = this.colorClickStack[stackHeight - 2];
 
+    // Find original image dimensions
     var imageWidth = this.manipCanvas.width;
     var imageHeight = this.manipCanvas.height;
+    // Get our current image data
     var imageData = this.manipContext.getImageData(0, 0, imageWidth, imageHeight);
     var data = imageData.data;
 
+    // Iterate through all locations of departing color
     for (var i = 0; i < mergeFrom.locations.length; i++) {
       var x = mergeFrom.locations[i][0],
           y = mergeFrom.locations[i][1];
 
+      // Calculate the beginning of our values in the data array
       var calcIndex = (x * 4) + (4 * imageWidth * y);
 
       data[calcIndex] = mergeTo.r;
       data[calcIndex + 1] = mergeTo.g;
       data[calcIndex + 2] = mergeTo.b;
 
-      // console.log(x, y, calcIndex);
+      // Add the location to the new source color
       mergeTo.addLocation(x, y);
     }
+
+    // Remove the merged color from our color collection
     this.colors[mergeFrom.r][mergeFrom.g][mergeFrom.b] = undefined;
+    // Let the color set up for merged state
     mergeFrom.setMerged();
+    // Remove color element from where it is in the flow and add it to the end
     $(mergeFrom.el).remove()[0];
     this.content.append(mergeFrom.el);
     
+    // Draw new image data to the manipulation canvas
     this.manipContext.imageSmoothingEnabled = false;
     this.manipContext.putImageData(imageData, 0, 0);
 
-    this.displayContext.imageSmoothingEnabled = false;
-    this.displayContext.drawImage(this.manipCanvas, 0, 0);
+    // Draw the updated display
+    this.drawDisplay();
 
+    // Clear the color click stack
     this.colorClickStack = [];
 
   } else {
@@ -191,7 +204,8 @@ Pool.prototype.toggleToggleMode = function() {
 // Called when the "max ratio" button is clicked
 Pool.prototype.setMaxRatio = function() {
   if (this.ratio != this.maxRatio) {
-    this.setRatio(this.maxRatio);
+    this.ratio = this.maxRatio;
+    this.drawDisplay();
   }
 };
 
@@ -200,7 +214,8 @@ Pool.prototype.setMaxRatio = function() {
 // Called when the "ratio up" button is clicked
 Pool.prototype.incRatio = function() {
   if (this.ratio < this.maxRatio) {
-    this.setRatio(this.ratio + 1);
+    this.ratio += 1
+    this.drawDisplay();
   }
 };
 
@@ -209,7 +224,8 @@ Pool.prototype.incRatio = function() {
 // Called when the "ratio down" button is clicked
 Pool.prototype.decRatio = function() {
   if (this.ratio > 1) {
-    this.setRatio(this.ratio - 1);
+    this.ratio -= 1;
+    this.drawDisplay();
   }
 };
 
@@ -218,7 +234,8 @@ Pool.prototype.decRatio = function() {
 // Called when the "min ratio" button is clicked
 Pool.prototype.setMinRatio = function() {
   if (this.ratio != 1) {
-    this.setRatio(1);
+    this.ratio = 1;
+    this.drawDisplay();
   }
 };
 
@@ -237,10 +254,8 @@ Pool.prototype.calculateMaxRatio = function() {
 
 
 
-// Called when a new ratio is set
-Pool.prototype.setRatio = function(ratio) {
-  this.ratio = ratio;
-
+// Called anytime the display should be redrawn
+Pool.prototype.drawDisplay = function() {
   // Set the display canvas to the scaled proportions
   // This canvas will change size with the display ratio
   this.displayCanvas.width = this.manipCanvas.width * this.ratio;

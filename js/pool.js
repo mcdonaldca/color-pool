@@ -48,9 +48,6 @@ Pool.prototype.colorClick = function(colorEl) {
   var isSource = $(colorEl).hasClass("selected-source");
   var isSelected = $(colorEl).hasClass("selected");
 
-  // Left in for debugging purposes
-  console.log("clicked: ", r, g, b);
-
   if (isSource) {
     this.clearColorClickStack();
   } else if (isSelected) {
@@ -196,8 +193,8 @@ Pool.prototype.mergeColors = function() {
   // Check that at least two colors have been selected
   if (stackHeight >= 2) {
     // Find the colors we'll be going to -> from
-    var mergeFrom = this.colorClickStack[stackHeight - 1];
-    var mergeTo = this.colorClickStack[stackHeight - 2];
+    var source = this.colorClickStack[0];
+    var colorsToMerge = this.colorClickStack.splice(1, stackHeight -1 );
 
     // Find original image dimensions
     var imageWidth = this.manipCanvas.width;
@@ -206,29 +203,33 @@ Pool.prototype.mergeColors = function() {
     var imageData = this.manipContext.getImageData(0, 0, imageWidth, imageHeight);
     var data = imageData.data;
 
-    // Iterate through all locations of departing color
-    for (var i = 0; i < mergeFrom.locations.length; i++) {
-      var x = mergeFrom.locations[i][0],
-          y = mergeFrom.locations[i][1];
+    for(var n = 0; n < colorsToMerge.length; n++) {
+      var mergeFrom = colorsToMerge[n];
 
-      // Calculate the beginning of our values in the data array
-      var calcIndex = (x * 4) + (4 * imageWidth * y);
+      // Iterate through all locations of departing color
+      for (var i = 0; i < mergeFrom.locations.length; i++) {
+        var x = mergeFrom.locations[i][0],
+            y = mergeFrom.locations[i][1];
 
-      data[calcIndex] = mergeTo.r;
-      data[calcIndex + 1] = mergeTo.g;
-      data[calcIndex + 2] = mergeTo.b;
+        // Calculate the beginning of our values in the data array
+        var calcIndex = (x * 4) + (4 * imageWidth * y);
 
-      // Add the location to the new source color
-      mergeTo.addLocation(x, y);
+        data[calcIndex] = source.r;
+        data[calcIndex + 1] = source.g;
+        data[calcIndex + 2] = source.b;
+
+        // Add the location to the new source color
+        source.addLocation(x, y);
+      }
+
+      // Remove the merged color from our color collection
+      this.colors[mergeFrom.r][mergeFrom.g][mergeFrom.b] = undefined;
+      // Let the color set up for merged state
+      mergeFrom.setMerged();
+      // Remove color element from where it is in the flow and add it to the end
+      $(mergeFrom.el).remove()[0];
+      this.content.append(mergeFrom.el);
     }
-
-    // Remove the merged color from our color collection
-    this.colors[mergeFrom.r][mergeFrom.g][mergeFrom.b] = undefined;
-    // Let the color set up for merged state
-    mergeFrom.setMerged();
-    // Remove color element from where it is in the flow and add it to the end
-    $(mergeFrom.el).remove()[0];
-    this.content.append(mergeFrom.el);
     
     // Draw new image data to the manipulation canvas
     this.manipContext.imageSmoothingEnabled = false;
@@ -240,8 +241,6 @@ Pool.prototype.mergeColors = function() {
     // Clear the color click stack
     this.clearColorClickStack();
 
-  } else {
-    console.log("not enough colors clicked");
   }
 };
 

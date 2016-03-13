@@ -20,6 +20,7 @@ function Pool() {
   this.toggleButton = $("#toggle");
   this.ratioUpButton = $("#ratio-up");
   this.ratioDownButton = $("#ratio-down");
+  this.compareButton = $("#compare");
 
   // Set the initial display ratio (can be adjusted via UI)
   this.ratio = 1;
@@ -326,22 +327,38 @@ Pool.prototype.setUpToggleDisplay = function() {
   // Draw the image on the toggle's display canvas.
   this.drawDisplay(this.toggleManipCanvas, this.toggleCanvas, this.toggleContext);
 
+  // If we're in compare mode, temporarily hide the panel.
+  if (this.compareMode) {
+    this.comparison.toggleClass("visible");
+    this.display.toggleClass("comparison-visible");
+  }
+  // Prevents compare toggling
+  this.compareButton.addClass("disabled");
+
   // Set the toggle display to be not the default.
   $(this.toggleCanvas).css("z-index", "0");
   $(this.toggleCanvas).addClass("visible");
 
-  // Show the text prompt
+  // Show the text prompt.
   $(this.display.children()[0]).css("opacity", "1");
 };
 
 
 
-// Called when a toggle canvas should be cleaned up
+// Called when a toggle canvas should be cleaned up.
 Pool.prototype.cleanUpToggleDisplay = function() {
   $(this.toggleCanvas).removeClass("visible");
 
   // Hide the text prompt
   $(this.display.children()[0]).css("opacity", "0");
+
+  // If we're in compare mode, re-show the panel.
+  if (this.compareMode) {
+    this.comparison.toggleClass("visible");
+    this.display.toggleClass("comparison-visible");
+  }
+  // Allow compare toggling again
+  this.compareButton.removeClass("disabled");
 };
 
 
@@ -510,13 +527,15 @@ Pool.prototype.updateComparisonChart = function() {
 
 // Called whenever the toggle history action is fired.
 Pool.prototype.toggleCompareMode = function() {
-  this.compareMode = !this.compareMode;
+  if (!this.toggleMode) {
+    this.compareMode = !this.compareMode;
 
-  this.comparison.toggleClass("visible");
-  this.display.toggleClass("comparison-visible");
+    this.comparison.toggleClass("visible");
+    this.display.toggleClass("comparison-visible");
 
-  if (this.compareMode) {
-    this.updateComparisonChart();
+    if (this.compareMode) {
+      this.updateComparisonChart();
+    }
   }
 }
 

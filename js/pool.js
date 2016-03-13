@@ -16,8 +16,6 @@ function Pool() {
   // Set up various buttons to control disabled state
   this.mergeButton = $("#merge");
   this.toggleButton = $("#toggle");
-  this.undoButton = $("#undo");
-  this.redoButton = $("#redo");
   this.ratioUpButton = $("#ratio-up");
   this.ratioDownButton = $("#ratio-down");
 
@@ -107,6 +105,7 @@ Pool.prototype.setImageWithSrc = function(imageSrc) {
     pool.drawImageOnLoad(this);
   }
   image.src = imageSrc;
+  this.clearColorClickStack();
 };
 
 

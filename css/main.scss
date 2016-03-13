@@ -17,7 +17,7 @@ header {
     color: #eee;
   }
 
-  .images {
+  .image-controls {
     position: absolute;
 
     right: 10px;
@@ -40,6 +40,11 @@ header {
         transform: translate(-50%, -50%);
       }
     }
+
+    .icon-button {
+      float: left;
+      margin: 5px;
+    }
   }
 }
 
@@ -55,6 +60,10 @@ body {
   background-size: 40px 40px;
   font-size: 11px;
   cursor: pointer;
+
+  &.dark {
+    background-color: #666;
+  }
 
   &.disabled {
     opacity: .25;
@@ -94,6 +103,10 @@ body {
 
 .icon-min {
   background-image: url(../img/icons/min.png);
+}
+
+.icon-settings-dark {
+  background-image: url(../img/icons/settings-dark.png);
 }
 
 #display, #content {

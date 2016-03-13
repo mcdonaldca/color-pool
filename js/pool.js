@@ -545,7 +545,11 @@ Pool.prototype.initializeClickEvents = function() {
     } else if (e.which == "32" && pool.toggleMode) {
       pool.toggleChange();
     } else if (e.which == "27") {
-      pool.clearColorClickStack();
+      if (pool.toggleMode) {
+        pool.toggleToggleMode();
+      } else {
+        pool.clearColorClickStack();
+      }
     } else if (e.which == "67") {
       pool.toggleCompareMode();
     }

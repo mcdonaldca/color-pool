@@ -70,6 +70,16 @@ body {
   background-image: url(../img/icons/toggle.png);
 }
 
+.icon-compare {
+  background-image: url(../img/icons/compare.png);
+  transition: transform .2s ease-in-out;
+}
+
+.comparison-visible .icon-compare {
+  transform: rotate(180deg);
+  transition: transform .35s ease-in-out;
+}
+
 .icon-max {
   background-image: url(../img/icons/max.png);
 }
@@ -95,7 +105,7 @@ body {
 
 #display.toggle-mode {
   height: calc(100% - 60px);
-  transition: height .3s ease-in-out;
+  transition: height .35s ease-in-out;
 }
 
 #content.toggle-mode {
@@ -107,6 +117,8 @@ body {
 }
 
 #display {
+  transition: width .2s ease-in-out;
+
   .controls {
     margin: 10px 0 0 10px;
 
@@ -124,6 +136,11 @@ body {
     .icon-button {
       margin-top: 10px;
     }
+  }
+
+  &.comparison-visible {
+    width: calc(100% - 300px);
+    transition: width .35s ease-in-out;
   }
 }
 
@@ -144,6 +161,23 @@ body {
   &.visible {
     display: block;
     z-index: 0;
+  }
+}
+
+#comparison {
+  position: absolute;
+  right: 0;
+  top: 60px;
+  width: 0;
+  height: calc(50% - 20px);
+  overflow: hidden;
+  background-color: #222;
+
+  transition: width .2s ease-in-out;
+
+  &.visible {
+    width: 300px;
+    transition: width .35s ease-in-out;
   }
 }
 

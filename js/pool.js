@@ -13,6 +13,8 @@ function Pool() {
   this.toggleManipCanvas = document.createElement("canvas");
   this.toggleManipContext = this.toggleManipCanvas.getContext("2d");
 
+  this.comparison = $("#comparison");
+
   // Set up various buttons to control disabled state
   this.mergeButton = $("#merge");
   this.toggleButton = $("#toggle");
@@ -26,6 +28,9 @@ function Pool() {
 
   // Tracks if we're in toggle mode
   this.toggleMode = false;
+
+  // Tracks if we're in comparison mode
+  this.compareMode = false;
 
   // Display initial image
   this.setImageWithSrc("img/venus.png");
@@ -431,6 +436,16 @@ Pool.prototype.drawDisplay = function(manipCanvas, displayCanvas, displayContext
 
 
 
+// Called whenever the toggle history action is fired.
+Pool.prototype.toggleCompareMode = function() {
+  this.compareMode = !this.compareMode;
+
+  this.comparison.toggleClass("visible");
+  this.display.toggleClass("comparison-visible");
+}
+
+
+
 // Called when colorClickStack should be cleared 
 Pool.prototype.clearColorClickStack = function() {
  this.colorClickStack = [];
@@ -455,10 +470,6 @@ Pool.prototype.initializeClickEvents = function() {
     pool.setImageWithSrc(imageName.src);
   });
 
-  $("#merge").click(function() {
-    pool.mergeColors();
-  });
-
   document.onkeydown = function(e) {
     // When "m" is pressed, merge colors
     if (e.which == "77" && !pool.toggleMode) { 
@@ -467,11 +478,23 @@ Pool.prototype.initializeClickEvents = function() {
       pool.toggleToggleMode();
     } else if (e.which == "32" && pool.toggleMode) {
       pool.toggleChange();
+    } else if (e.which == "27") {
+      pool.clearColorClickStack();
+    } else if (e.which == "67") {
+      pool.toggleCompareMode();
     }
   }
 
+  $("#merge").click(function() {
+    pool.mergeColors();
+  });
+
   $("#toggle").click(function() {
     pool.toggleToggleMode();
+  });
+
+  $("#compare").click(function() {
+    pool.toggleCompareMode();
   });
 
   $("#ratio-max").click(function() {

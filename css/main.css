@@ -29,6 +29,26 @@ header {
 body {
   overflow: hidden; }
 
+.icon-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  background-color: #eee;
+  font-size: 11px;
+  background-size: 40px 40px; }
+
+.icon-max {
+  background-image: url(../img/icons/max.png); }
+
+.icon-up {
+  background-image: url(../img/icons/up.png); }
+
+.icon-down {
+  background-image: url(../img/icons/down.png); }
+
+.icon-min {
+  background-image: url(../img/icons/min.png); }
+
 #display, #content {
   position: relative;
   width: 100%;
@@ -43,6 +63,13 @@ body {
   height: 0;
   padding: 0;
   transition: height .3s ease-in-out,  padding .3s ease-in-out; }
+
+#display .ratio-controls {
+  position: absolute;
+  right: 10px;
+  bottom: 10px; }
+  #display .ratio-controls .icon-button {
+    margin-top: 10px; }
 
 #canvas {
   position: absolute;

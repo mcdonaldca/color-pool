@@ -9,7 +9,13 @@ function Pool() {
   this.manipContext = this.manipCanvas.getContext("2d");
 
   // Set the initial display ratio (can be adjusted via UI)
-  this.ratio = 10;
+  this.ratio = 1;
+  // Default max to 1
+  this.maxRatio = 1;
+
+  // Tracks if we're in toggle mode
+  this.toggleMode = false;
+
   // Display initial image
   this.setImageWithSrc("img/venus.png");
 
@@ -17,26 +23,7 @@ function Pool() {
   this.colorClickStack = [];
 
   // Set various click and key interactions
-  var pool = this;
-  $(".image-button").click(function() {
-    var imageName = $(this).children()[0];
-    pool.setImageWithSrc(imageName.src);
-  });
-
-  $("#merge").click(function() {
-    pool.mergeColors();
-  });
-
-  $("#toggle").click(function() {
-    pool.toggleChange();
-  });
-
-  document.onkeydown = function(e) {
-    // When "m" is pressed, merge colors
-    if (e.which == "77") { 
-      pool.mergeColors();
-    }
-  }
+  this.initializeClickEvents();
 }
 
 
@@ -79,10 +66,6 @@ Pool.prototype.drawImageOnLoad = function(image) {
   // This canvas will always be the size of the original image
   this.manipCanvas.width = image.width;
   this.manipCanvas.height = image.height;
-  // Set the display canvas to the scaled proportions
-  // This canvas will change size with the display ratio
-  this.displayCanvas.width = image.width * this.ratio;
-  this.displayCanvas.height = image.height * this.ratio;
 
   // Draw original image on manipulation canvas
   // Turn off image smoothing so pixels render exactly
@@ -138,10 +121,12 @@ Pool.prototype.drawImageOnLoad = function(image) {
     pool.addClick(this);
   });
 
-  // Scale the display canvas & draw the manipulation canvas content
-  this.displayContext.imageSmoothingEnabled = false;
-  this.displayContext.scale(this.ratio, this.ratio);
-  this.displayContext.drawImage(this.manipCanvas, 0, 0);
+  // Find largest ratio image can fit without cropping
+  this.maxRatio = this.calculateMaxRatio();
+  this.ratio = Math.floor(this.maxRatio / 2);
+
+  // Draw the scaled image on the display
+  this.setRatio(this.ratio);
 };
 
 
@@ -187,20 +172,130 @@ Pool.prototype.mergeColors = function() {
   } else {
     console.log("not enough colors clicked");
   }
-}
+};
 
 
 
 // Called whenever the toggle history action is fired.
 Pool.prototype.toggleChange = function() {
+  this.toggleMode = !this.toggleMode;
   this.display.toggleClass("toggle-mode");
   this.content.toggleClass("toggle-mode");
+};
+
+
+
+// Called when the "max ratio" button is clicked
+Pool.prototype.setMaxRatio = function() {
+  if (this.ratio != this.maxRatio) {
+    this.setRatio(this.maxRatio);
+  }
+};
+
+
+
+// Called when the "ratio up" button is clicked
+Pool.prototype.incRatio = function() {
+  if (this.ratio < this.maxRatio) {
+    this.setRatio(this.ratio + 1);
+  }
+};
+
+
+
+// Called when the "ratio down" button is clicked
+Pool.prototype.decRatio = function() {
+  if (this.ratio > 1) {
+    this.setRatio(this.ratio - 1);
+  }
+};
+
+
+
+// Called when the "min ratio" button is clicked
+Pool.prototype.setMinRatio = function() {
+  if (this.ratio != 1) {
+    this.setRatio(1);
+  }
+};
+
+
+
+// Called upon intialization, finds max ratio
+Pool.prototype.calculateMaxRatio = function() {
+  // Find height of entire display area
+  var displayHeight = this.display.height();
+  // Find height of image
+  var imageHeight = this.manipCanvas.height;
+
+  // Return the largest size (leaving ~7px of padding)
+  return Math.floor((displayHeight - 15) / imageHeight);
+}
+
+
+
+// Called when a new ratio is set
+Pool.prototype.setRatio = function(ratio) {
+  this.ratio = ratio;
+
+  // Set the display canvas to the scaled proportions
+  // This canvas will change size with the display ratio
+  this.displayCanvas.width = this.manipCanvas.width * this.ratio;
+  this.displayCanvas.height = this.manipCanvas.height * this.ratio;
+
+  // Scale the display canvas & draw the manipulation canvas content
+  this.displayContext.imageSmoothingEnabled = false;
+  this.displayContext.scale(this.ratio, this.ratio);
+  this.displayContext.drawImage(this.manipCanvas, 0, 0);
+}
+
+
+
+// Called upon intialization, sets up click handlers
+Pool.prototype.initializeClickEvents = function() {
+  var pool = this;
+  $(".image-button").click(function() {
+    var imageName = $(this).children()[0];
+    pool.setImageWithSrc(imageName.src);
+  });
+
+  $("#merge").click(function() {
+    pool.mergeColors();
+  });
+
+  document.onkeydown = function(e) {
+    // When "m" is pressed, merge colors
+    if (e.which == "77") { 
+      pool.mergeColors();
+    }
+  }
+
+  $("#toggle").click(function() {
+    pool.toggleChange();
+  });
+
+  $("#ratio-max").click(function() {
+    pool.setMaxRatio();
+  })
+
+  $("#ratio-up").click(function() {
+    pool.incRatio();
+  })
+
+  $("#ratio-down").click(function() {
+    pool.decRatio();
+  })
+
+  $("#ratio-min").click(function() {
+    pool.setMinRatio();
+  })
 }
 
 
 
 // Start application when window loads.   
 window.onload = function() {
+  // Declaerd globally for debugging purposes
   pool = new Pool();
 }
 

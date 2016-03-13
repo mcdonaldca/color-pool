@@ -8,6 +8,14 @@ function Pool() {
   this.manipCanvas = $("#manip")[0];
   this.manipContext = this.manipCanvas.getContext("2d");
 
+  // Set up various buttons to control disabled state
+  this.mergeButton = $("#merge");
+  this.toggleButton = $("#toggle");
+  this.undoButton = $("#undo");
+  this.redoButton = $("#redo");
+  this.ratioUpButton = $("#ratio-up");
+  this.ratioDownButton = $("#ratio-down");
+
   // Set the initial display ratio (can be adjusted via UI)
   this.ratio = 1;
   // Default max to 1
@@ -31,7 +39,7 @@ function Pool() {
 
 
 // Called whenever a color swatch is clicked
-Pool.prototype.addClick = function(colorEl) {
+Pool.prototype.colorClick = function(colorEl) {
   var r = colorEl.getAttribute("r"),
       g = colorEl.getAttribute("g"),
       b = colorEl.getAttribute("b"),
@@ -39,7 +47,18 @@ Pool.prototype.addClick = function(colorEl) {
 
   // Add color to stack
   // TODO: react differently if color is already in stack
-  this.colorClickStack.push(this.colors[r][g][b]);
+  var clickedColor = this.colors[r][g][b];
+
+  // If it's the first item clicked, it should be the source
+  if (this.colorClickStack.length == 0) {
+    clickedColor.setSourceSelection();
+  // Otherwise, it's a merger
+  } else {
+    clickedColor.el.className += " selected";
+  }
+  
+  this.colorClickStack.push(clickedColor);
+
   // Left in for debugging purposes
   console.log("clicked: ", r, g, b);
 }
@@ -120,12 +139,23 @@ Pool.prototype.drawImageOnLoad = function(image) {
   // Now that we have generated our color elements, set a click function
   var pool = this;
   $(".color-container").click(function() {
-    pool.addClick(this);
+    pool.colorClick(this);
   });
 
   // Find largest ratio image can fit without cropping
   this.maxRatio = this.calculateMaxRatio();
   this.ratio = Math.floor(this.maxRatio / 2);
+  // If an image is used that won't fit, just let it overflow
+  if (this.ratio == 0) {
+    this.ratio = 1;
+  }
+
+  // Disabled "up" and "down" buttons is at limits
+  if (this.ratio == 1) {
+    this.ratioDownButton.addClass("disabled");
+  } else if (this.ratio == this.maxRatio) {
+    this.ratioUpButton.addClass("disabled");
+  }
 
   // Draw the scaled image on the display
   this.drawDisplay();
@@ -183,6 +213,10 @@ Pool.prototype.mergeColors = function() {
 
     // Clear the color click stack
     this.colorClickStack = [];
+    // Remove all tagged colors
+    $(".selected").removeClass("selected");
+    $(".selected-source .color-content").empty();
+    $(".selected-source").removeClass("selected-source");
 
   } else {
     console.log("not enough colors clicked");
@@ -205,6 +239,8 @@ Pool.prototype.toggleToggleMode = function() {
 Pool.prototype.setMaxRatio = function() {
   if (this.ratio != this.maxRatio) {
     this.ratio = this.maxRatio;
+    // We've hit the max, disable up button
+    this.ratioUpButton.addClass("disabled");
     this.drawDisplay();
   }
 };
@@ -215,6 +251,12 @@ Pool.prototype.setMaxRatio = function() {
 Pool.prototype.incRatio = function() {
   if (this.ratio < this.maxRatio) {
     this.ratio += 1
+
+    // Check if the down button should be re-enabled
+    if (this.ratio == 2) {
+      this.ratioDownButton.removeClass("disabled");
+    }
+
     this.drawDisplay();
   }
 };
@@ -225,6 +267,12 @@ Pool.prototype.incRatio = function() {
 Pool.prototype.decRatio = function() {
   if (this.ratio > 1) {
     this.ratio -= 1;
+
+    // Check if the up button should be re-enabled
+    if (this.ratio == this.maxRatio - 1) {
+      this.ratioUpButton.removeClass("disabled");
+    }
+
     this.drawDisplay();
   }
 };
@@ -235,6 +283,8 @@ Pool.prototype.decRatio = function() {
 Pool.prototype.setMinRatio = function() {
   if (this.ratio != 1) {
     this.ratio = 1;
+    // We've hit the min, disabled the down button
+    this.ratioDownButton.addClass("disabled");
     this.drawDisplay();
   }
 };

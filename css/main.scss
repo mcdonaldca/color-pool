@@ -1,3 +1,5 @@
+// TODO: modularize this sass, yeesh
+
 * {
   margin: 0;
   padding: 0;
@@ -137,22 +139,40 @@ body {
 
     .color {
       width: 100%;
-      height: calc(100% - 10px);
-      border-top-left-radius: 5px;
-      border-top-right-radius: 5px;
+      font: 14px Bitter;
+      color: #ccc;
+      text-align: center;
+    }
+
+    &.selected-source {
+      .color {
+        height: 30px;
+        margin-top: 20px;
+        background-color: rgba(68, 68, 68, .8);
+
+        .color-content {
+          padding-top: 5px;
+        }
+      }
+    }
+
+    &.selected {
+      width: 70px - 6px;
+      height: 70px - 6px;
+      border: 3px #444 solid;
+      .color {
+      }
     }
 
     &.merged {
-      background-color: gray;
-
       .color {
+        height: calc(100% - 10px);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
         background-color: rgba(68, 68, 68, .8);
 
         .color-content {
           padding-top: 22px;
-          font: 14px Bitter;
-          color: #ccc;
-          text-align: center;
         }
       }
     }

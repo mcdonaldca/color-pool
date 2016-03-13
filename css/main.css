@@ -101,17 +101,25 @@ body {
     border-radius: 5px; }
     #content .color-container .color {
       width: 100%;
+      font: 14px Bitter;
+      color: #ccc;
+      text-align: center; }
+    #content .color-container.selected-source .color {
+      height: 30px;
+      margin-top: 20px;
+      background-color: rgba(68, 68, 68, 0.8); }
+      #content .color-container.selected-source .color .color-content {
+        padding-top: 5px; }
+    #content .color-container.selected {
+      width: 64px;
+      height: 64px;
+      border: 3px #444 solid; }
+    #content .color-container.merged .color {
       height: calc(100% - 10px);
       border-top-left-radius: 5px;
-      border-top-right-radius: 5px; }
-    #content .color-container.merged {
-      background-color: gray; }
-      #content .color-container.merged .color {
-        background-color: rgba(68, 68, 68, 0.8); }
-        #content .color-container.merged .color .color-content {
-          padding-top: 22px;
-          font: 14px Bitter;
-          color: #ccc;
-          text-align: center; }
+      border-top-right-radius: 5px;
+      background-color: rgba(68, 68, 68, 0.8); }
+      #content .color-container.merged .color .color-content {
+        padding-top: 22px; }
 
 /*# sourceMappingURL=main.css.map */

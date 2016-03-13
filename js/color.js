@@ -17,6 +17,12 @@ Color.prototype.addLocation = function(x, y) {
   this.locations.push([x, y]);
 };
 
+// Called when a color is set as the source in a selection
+Color.prototype.setSourceSelection = function() {
+  this.el.className += " selected-source";
+  this.colorContentEl.innerHTML = "source";
+}
+
 // Called when a color has been merged
 Color.prototype.setMerged = function() {
   this.merged = true;

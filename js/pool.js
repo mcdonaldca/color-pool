@@ -603,7 +603,10 @@ Pool.prototype.updateComparisonChart = function() {
     var startingAngle = 0;
     var arcSize = (2 * Math.PI) / (colorNum - 1);
 
-    var drawColors = this.colorClickStack.splice(0).reverse();
+    var drawColors = [];
+    for (var i = 0; i < colorNum; i++) {
+      drawColors.unshift(this.colorClickStack[i]);
+    }
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     for (var i = 0; i < colorNum; i++) {

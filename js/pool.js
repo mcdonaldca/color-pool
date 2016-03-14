@@ -34,6 +34,9 @@ function Pool() {
   // Tracks if we're in comparison mode
   this.compareMode = false;
 
+  // Tracks if we're in number mode
+  this.numberMode = false;
+
   // Display initial image
   this.setImageWithSrc("img/venus.png");
 
@@ -76,7 +79,7 @@ Pool.prototype.colorClick = function(colorEl) {
 
   var clickedColor = this.getColor(r, g, b, a);
   
-  if (clickedColor != undefined) {
+  if (clickedColor != undefined && !this.numberMode) {
     var isMerged = clickedColor.merged;
     var isSource = $(colorEl).hasClass("selected-source");
     var isSelected = $(colorEl).hasClass("selected");
@@ -667,9 +670,42 @@ Pool.prototype.toggleCompareMode = function() {
 
 
 
+// Toggles number mode
+Pool.prototype.toggleNumberMode = function() {
+  this.numberMode = !this.numberMode;
+
+  if (this.numberMode) {
+    // Reset current click stack state
+    $(".selected-source").removeClass("selected-source");
+    $(".selected").removeClass("selected");
+
+    var colorBlocks = $(".color-container");
+    for (var i = 0; i < colorBlocks.length; i++) {
+      var colorEl = colorBlocks[i];
+
+      var r = colorEl.getAttribute("r"),
+          g = colorEl.getAttribute("g"),
+          b = colorEl.getAttribute("b"),
+          a = colorEl.getAttribute("a");
+
+      var color = this.getColor(r, g, b);
+      if (!color.merged) {
+        $(color.innelEl).css("padding", "2px 0");
+        $(color.colorContentEl).html(color.locationList().length);
+      }
+    }
+  } else {
+    $(".color-container .color").css("padding", "0");
+    $(".color-container .color-content").html("");
+    this.restoreColorClickStack();
+  }
+}
+
+
+
 // Called when colorClickStack should be cleared 
 Pool.prototype.clearColorClickStack = function() {
- this.colorClickStack = [];
+  this.colorClickStack = [];
 
   // Remove all tagged colors
   $(".selected").removeClass("selected");
@@ -683,6 +719,22 @@ Pool.prototype.clearColorClickStack = function() {
   if (this.compareMode) {
     this.updateComparisonChart();
   }
+}
+
+
+
+// Called to restore the click stack state
+Pool.prototype.restoreColorClickStack = function() {
+  for (var i = 0; i < this.colorClickStack.length; i++) {
+    var color = this.colorClickStack[i];
+    if (i == 0) {
+      $(color.el).addClass("selected-source");
+      $(color.colorContentEl).html("source");
+    } else {
+      $(color.el).addClass("selected");
+    }
+  }
+  $(".merged .color-content").html("merged");
 }
 
 
@@ -728,13 +780,17 @@ Pool.prototype.initializeClickEvents = function() {
     } else if (e.which == "85") {
       pool.unmergeColor();
 
-    // When "s" is pressed, open settings
+    // When "s" is pressed, open settings.
     } else if (e.which == "83") {
       if ($(".overlay").css("display") == "block") {
         $(".overlay").slideUp(350);
       } else {
         $(".overlay").slideDown(350);
       }
+
+    // When "n" is pressed, toggle number mode.
+    } else if (e.which == "78") {
+      pool.toggleNumberMode();
     }
   }
 
@@ -752,6 +808,10 @@ Pool.prototype.initializeClickEvents = function() {
 
   $("#compare").click(function() {
     pool.toggleCompareMode();
+  });
+
+  $("#numbers").click(function() {
+    pool.toggleNumberMode();
   });
 
   $("#ratio-max").click(function() {

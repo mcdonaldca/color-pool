@@ -95,6 +95,9 @@ body {
 .icon-upload-light {
   background-image: url(../img/icons/upload-light.png); }
 
+.icon-numbers-light {
+  background-image: url(../img/icons/numbers-light.png); }
+
 #display, #content {
   position: relative;
   width: 100%;
@@ -136,6 +139,16 @@ body {
   bottom: 10px; }
   #display .ratio-controls .icon-button {
     margin-top: 10px; }
+#display .bin-controls {
+  position: absolute;
+  left: 10px;
+  bottom: 0;
+  background-color: #eee;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 10px; }
+  #display .bin-controls .icon-button {
+    background-color: #666; }
 #display.comparison-visible {
   width: calc(100% - 250px);
   transition: all .35s ease-in-out; }
@@ -193,13 +206,14 @@ body {
     cursor: pointer; }
     #content .color-container .color {
       width: 100%;
-      font: 14px Bitter;
+      margin-top: 21px;
+      background-color: rgba(68, 68, 68, 0.8);
+      font: 22px Bitter;
       color: #ccc;
       text-align: center; }
     #content .color-container.selected-source .color {
       height: 30px;
-      margin-top: 21px;
-      background-color: rgba(68, 68, 68, 0.8); }
+      font-size: 14px; }
       #content .color-container.selected-source .color .color-content {
         padding-top: 5px; }
     #content .color-container.selected {
@@ -208,9 +222,11 @@ body {
       border: 3px #444 solid; }
     #content .color-container.merged .color {
       height: calc(100% - 10px);
+      margin-top: 0;
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
-      background-color: rgba(68, 68, 68, 0.8); }
+      background-color: rgba(68, 68, 68, 0.8);
+      font-size: 14px; }
       #content .color-container.merged .color .color-content {
         padding-top: 22px; }
     #content .color-container.merged.selected .color {

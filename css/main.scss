@@ -129,6 +129,10 @@ body {
   background-image: url(../img/icons/upload-light.png);
 }
 
+.icon-numbers-light {
+  background-image: url(../img/icons/numbers-light.png);
+}
+
 #display, #content {
   position: relative;
   width: 100%;
@@ -184,6 +188,20 @@ body {
 
     .icon-button {
       margin-top: 10px;
+    }
+  }
+
+  .bin-controls {
+    position: absolute;
+    left: 10px;
+    bottom: 0;
+    background-color: #eee;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 10px;
+
+    .icon-button {
+      background-color: #666;
     }
   }
 
@@ -261,7 +279,10 @@ body {
 
     .color {
       width: 100%;
-      font: 14px Bitter;
+      margin-top: 21px;
+      background-color: rgba(68, 68, 68, .8);
+
+      font: 22px Bitter;
       color: #ccc;
       text-align: center;
     }
@@ -269,8 +290,7 @@ body {
     &.selected-source {
       .color {
         height: 30px;
-        margin-top: 21px;
-        background-color: rgba(68, 68, 68, .8);
+        font-size: 14px;
 
         .color-content {
           padding-top: 5px;
@@ -287,9 +307,11 @@ body {
     &.merged {
       .color {
         height: calc(100% - 10px);
+        margin-top: 0;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
         background-color: rgba(68, 68, 68, .8);
+        font-size: 14px;
 
         .color-content {
           padding-top: 22px;

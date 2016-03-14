@@ -169,6 +169,11 @@ Pool.prototype.colorClick = function(colorEl) {
 Pool.prototype.setImageWithSrc = function(imageSrc) {
   // Removing existing colors in the content section
   this.content.empty();
+  var lastSlash = imageSrc.lastIndexOf("/");
+  if (lastSlash != -1 && lastSlash != imageSrc.length - 1) {
+    var imageName = imageSrc.substr(lastSlash + 1, imageSrc.length);
+    $("#download").attr("download", imageName);
+  }
 
   // Create a new image, set its onload function, and set the source
   var image = new Image();
@@ -367,8 +372,6 @@ Pool.prototype.generateNewImageData = function(source, colorsToMerge) {
     var mergeFrom = colorsToMerge[n];
 
     var locs = mergeFrom.locationList();
-    console.log(mergeFrom.locations);
-    console.log(locs);
     // Iterate through all locations of departing color
     for (var i = 0; i < locs.length; i++) {
       var x = locs[i][0],
@@ -580,6 +583,11 @@ Pool.prototype.drawDisplay = function(manipCanvas, displayCanvas, displayContext
   displayContext.imageSmoothingEnabled = false;
   displayContext.scale(this.ratio, this.ratio);
   displayContext.drawImage(manipCanvas, 0, 0);
+
+  if (manipCanvas == this.manipCanvas) {
+    var dataURL = this.manipCanvas.toDataURL("image/png");
+    $("#download").attr("href", dataURL);
+  }
 }
 
 

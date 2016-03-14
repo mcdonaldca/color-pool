@@ -28,7 +28,6 @@ Color.prototype.addLocation = function(x, y) {
 // Called to add a new location
 Color.prototype.addLocations = function(newLocations) {
   for (var i = 0; i < newLocations.length; i++) {
-    console.log(newLocations[i][0], newLocations[i][1]);
     this.addLocation(newLocations[i][0], newLocations[i][1]);
   }
 };

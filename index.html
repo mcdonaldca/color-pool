@@ -22,10 +22,10 @@
       Pixel Pool
     </div>
     <div class="image-controls">
-      <div class="image-button"><img src="img/mercury.png"></div>
-      <div class="image-button"><img src="img/venus.png"></div>
-      <div class="image-button"><img src="img/earth.png"></div>
-      <div class="image-button"><img src="img/test.png"></div>
+      <button class="image-button"><img src="img/mercury.png"></button>
+      <button class="image-button"><img src="img/venus.png"></button>
+      <button class="image-button"><img src="img/earth.png"></button>
+      <button class="image-button"><img src="img/test.png"></button>
       <div class="icon-button icon-upload-light" id="upload"></div>
       <div class="icon-button icon-settings-dark" id="settings"></div>
     </div>
@@ -36,7 +36,9 @@
       <div class="icon-button icon-merge disabled" id="merge"></div>
       <div class="icon-button icon-toggle disabled" id="toggle"></div>
       <div class="icon-button icon-unmerge disabled" id="unmerge"></div>
-      <div class="icon-button icon-download" id="download"></div>
+      <div class="icon-button icon-download">
+        <a href="" id="download" download="pixel-pool.png"></a>
+      </div>
     </div>
     <canvas id="canvas"></canvas>
     <canvas id="canvas-toggle"></canvas>

@@ -31,6 +31,7 @@ header {
       width: 40px;
       height: 40px;
       margin: 5px;
+      border: none;
       border-radius: 5px;
 
       img {
@@ -60,6 +61,7 @@ body {
 .icon-button {
   width: 40px;
   height: 40px;
+  border: none;
   border-radius: 5px;
   background-color: #eee;
   background-size: 40px 40px;
@@ -165,6 +167,12 @@ body {
     .icon-button {
       float: left;
       margin-right: 10px;
+      
+      a {
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 

@@ -46,6 +46,10 @@ header {
       background-color: #666;
       margin: 5px;
     }
+
+    .icon-button.icon-upload-light {
+      background-color: #222;
+    }
   }
 }
 
@@ -112,6 +116,14 @@ body {
 
 .icon-close-light {
   background-image: url(../img/icons/close-light.png);
+}
+
+.icon-download {
+  background-image: url(../img/icons/download.png);
+}
+
+.icon-upload-light {
+  background-image: url(../img/icons/upload-light.png);
 }
 
 #display, #content {

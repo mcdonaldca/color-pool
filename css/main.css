@@ -52,6 +52,9 @@ body {
 .icon-merge {
   background-image: url(../img/icons/merge.png); }
 
+.icon-unmerge {
+  background-image: url(../img/icons/unmerge.png); }
+
 .icon-toggle {
   background-image: url(../img/icons/toggle.png); }
 
@@ -188,15 +191,19 @@ body {
       width: 64px;
       height: 64px;
       border: 3px #444 solid; }
-    #content .color-container.merged {
-      cursor: default; }
-      #content .color-container.merged .color {
-        height: calc(100% - 10px);
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        background-color: rgba(68, 68, 68, 0.8); }
-        #content .color-container.merged .color .color-content {
-          padding-top: 22px; }
+    #content .color-container.merged .color {
+      height: calc(100% - 10px);
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      background-color: rgba(68, 68, 68, 0.8); }
+      #content .color-container.merged .color .color-content {
+        padding-top: 22px; }
+    #content .color-container.merged.selected .color {
+      height: calc(100% - 7px);
+      border-top-left-radius: 0;
+      border-top-right-radius: 0; }
+      #content .color-container.merged.selected .color .color-content {
+        padding-top: 19px; }
 
 .overlay {
   position: absolute;

@@ -9,26 +9,97 @@ function Color(r, g, b, a) {
   this.buildElement();
 
   this.merged = false;
-  this.locations = [];
+  this.mergedTo = undefined;
+  this.locations = {};
 }
+
+
 
 // Called to add a new location
 Color.prototype.addLocation = function(x, y) {
-  this.locations.push([x, y]);
+  if (!(x in this.locations)) {
+    this.locations[x] = {};
+  }
+  this.locations[x][y] = 1;
 };
+
+
+
+// Called to add a new location
+Color.prototype.addLocations = function(newLocations) {
+  for (var i = 0; i < newLocations.length; i++) {
+    console.log(newLocations[i][0], newLocations[i][1]);
+    this.addLocation(newLocations[i][0], newLocations[i][1]);
+  }
+};
+
+
+
+// Used to remove locations
+Color.prototype.removeLocations = function(locations) {
+  for (var i = 0; i < locations.length; i++) {
+    var x = locations[i][0],
+        y = locations[i][1];
+
+    if (this.locations[x] != undefined) {
+      if (this.locations[x][y] != undefined) {
+        delete this.locations[x][y];
+        if (Object.keys(this.locations[x]).length == 0) {
+          delete this.locations[x];
+        }
+      }
+    }
+  }
+}
+
+
+
+// Returns locations in list form
+Color.prototype.locationList = function() {
+  var list = [];
+  for (var x in this.locations) {
+    if (this.locations.hasOwnProperty(x)) {
+      for (var y in this.locations[x]) {
+        if (this.locations[x].hasOwnProperty(y)) {
+          list.push([x, y]);
+        }
+      }
+    }
+  }
+  return list;
+}
+
+
 
 // Called when a color is set as the source in a selection
 Color.prototype.setSourceSelection = function() {
-  this.el.className += " selected-source";
-  this.colorContentEl.innerHTML = "source";
+  $(this.el).addClass("selected-source");
+  $(this.colorContentEl).html("source");
 }
 
+
+
 // Called when a color has been merged
-Color.prototype.setMerged = function() {
+Color.prototype.setMerged = function(sourceColor) {
   this.merged = true;
-  this.el.className +=  " merged";
-  this.colorContentEl.innerHTML = "merged";
+  this.mergedTo = sourceColor;
+  $(this.el).addClass("merged");
+  $(this.colorContentEl).html("merged");
 };
+
+
+
+// Called when a color has been merged
+Color.prototype.setUnmerged = function() {
+  this.mergedTo.removeLocations(this.locationList());
+
+  this.merged = false;
+  this.mergedTo = undefined;
+  $(this.el).removeClass("merged");
+  $(this.colorContentEl).html("");
+};
+
+
 
 // Called to build the HTML element structure
 Color.prototype.buildElement = function() {

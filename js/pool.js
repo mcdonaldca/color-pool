@@ -18,6 +18,7 @@ function Pool() {
   // Set up various buttons to control disabled state
   this.mergeButton = $("#merge");
   this.toggleButton = $("#toggle");
+  this.unmergeButton = $("#unmerge");
   this.ratioUpButton = $("#ratio-up");
   this.ratioDownButton = $("#ratio-down");
   this.compareButton = $("#compare");
@@ -47,6 +48,25 @@ function Pool() {
 
 
 
+// Called to retrieve a specific color
+Pool.prototype.getColor = function(r, g, b, a) {
+  var clickedColor;
+  try {
+    clickedColor = this.colors[r][g][b];
+  } catch (e) {
+    // Catches errors where the color isn't in our structure.
+    if (e instanceof TypeError) {
+      clickedColor = undefined;
+    // Pass any uncaught exception objects to error handler.
+    } else {
+      logMyErrors(e);
+    }
+  }
+  return clickedColor;
+}
+
+
+
 // Called whenever a color swatch is clicked
 Pool.prototype.colorClick = function(colorEl) {
   var r = colorEl.getAttribute("r"),
@@ -54,18 +74,49 @@ Pool.prototype.colorClick = function(colorEl) {
       b = colorEl.getAttribute("b"),
       a = colorEl.getAttribute("a");
 
-  var isSource = $(colorEl).hasClass("selected-source");
-  var isSelected = $(colorEl).hasClass("selected");
+  var clickedColor = this.getColor(r, g, b, a);
+  
+  if (clickedColor != undefined) {
+    var isMerged = clickedColor.merged;
+    var isSource = $(colorEl).hasClass("selected-source");
+    var isSelected = $(colorEl).hasClass("selected");
 
-  if (isSource) {
-    this.clearColorClickStack();
-  } else {
+    // If the color is currently the source color, unselected the whole stack
+    if (isSource) {
+      this.clearColorClickStack();
+      return;
+    }
+
+    // If the color clicked is a merged color
+    if (isMerged) {
+      // If we clicked on an already selected merged color
+      if (isSelected) {
+        $(colorEl).removeClass("selected");
+        this.unmergeButton.addClass("disabled");
+
+      } else {
+        // This shouldn't ever be more than one item, unless someone is editing the DOM
+        var selectedMerged = $(".merged.selected");
+
+        if (selectedMerged.length > 0) {
+          $(".merged.selected").removeClass("selected");
+        } else {
+          this.clearColorClickStack();
+        }
+
+        $(colorEl).addClass("selected");
+        this.unmergeButton.removeClass("disabled");
+      }
+      return;
+    }
+
+    // If the color is currently selected, unselect it.
     if (isSelected) {
       $(colorEl).removeClass("selected");
-      var clickedColor = this.colors[r][g][b];
 
       // Remove color from stack
       var i = this.colorClickStack.indexOf(clickedColor);
+      // Make sure the color really is in the stack
       if (i != -1) {
         this.colorClickStack.splice(i, 1);
 
@@ -75,28 +126,37 @@ Pool.prototype.colorClick = function(colorEl) {
           this.toggleButton.addClass("disabled");
         }
       }
-    } else {
-      // Get clicked color
-      var clickedColor = this.colors[r][g][b];
 
-      // If it's the first item clicked, it should be the source
-      if (this.colorClickStack.length == 0) {
-        clickedColor.setSourceSelection();
-      // Otherwise, it's a merger
-      } else {
-        clickedColor.el.className += " selected";
+      // Update comparison chart if it's open
+      if (this.compareMode) {
+        this.updateComparisonChart();
       }
-      
-      // Add color to stack
-      this.colorClickStack.push(clickedColor);
-
-      // Check if merging is valid
-      if (this.colorClickStack.length == 2) {
-        this.mergeButton.removeClass("disabled");
-        this.toggleButton.removeClass("disabled");
-      }
+      return;
     }
 
+    // If any merged colors are selected, de-select them.
+    if ($(".merged.selected").length > 0) {
+      $(".merged.selected").removeClass("selected");
+    }
+
+    // If it's the first item clicked, it should be the source
+    if (this.colorClickStack.length == 0) {
+      clickedColor.setSourceSelection();
+    // Otherwise, it's a merger
+    } else {
+      $(colorEl).addClass("selected");
+    }
+    
+    // Add color to stack
+    this.colorClickStack.push(clickedColor);
+
+    // Check if merging is valid
+    if (this.colorClickStack.length == 2) {
+      this.mergeButton.removeClass("disabled");
+      this.toggleButton.removeClass("disabled");
+    }
+
+    // Update comparison chart if it's open
     if (this.compareMode) {
       this.updateComparisonChart();
     }
@@ -164,6 +224,10 @@ Pool.prototype.drawImageOnLoad = function(image) {
         // the new element in our content.
         var color = new Color(r, g, b, a);
         colors[r][g][b] = color;
+        var pool = this;
+        $(color.el).click(function() {
+          pool.colorClick(this);
+        });
         this.content.append(color.el);
       }
 
@@ -177,11 +241,6 @@ Pool.prototype.drawImageOnLoad = function(image) {
 
   // Save the colors collection to Pool object
   this.colors = colors;
-  // Now that we have generated our color elements, set a click function
-  var pool = this;
-  $(".color-container").click(function() {
-    pool.colorClick(this);
-  });
 
   // Find largest ratio image can fit without cropping
   this.maxRatio = this.calculateMaxRatio();
@@ -204,13 +263,36 @@ Pool.prototype.drawImageOnLoad = function(image) {
 
 
 
-// Called whenever the color merge action is fired
+// Called whenever the color merge action is fired.
 Pool.prototype.mergeColors = function() {
   stackHeight = this.colorClickStack.length;
 
-  // Check that at least two colors have been selected
+  // Check that at least two colors have been selected.
   if (stackHeight >= 2) {
-    var imageData = this.generateNewImageData(this.colorClickStack, true);
+    var source = this.colorClickStack[0];
+    var mergedColors = this.colorClickStack.splice(1, stackHeight - 1);
+
+    var imageData = this.generateNewImageData(source, mergedColors);
+
+    for (var i = 0; i < stackHeight - 1; i++) {
+      var color = mergedColors[i];
+
+      // Add the locations to the new source color.
+      source.addLocations(color.locationList());
+      // Mark the color as merged.
+      color.setMerged(source);
+
+      // Remove color element from where it is in the flow and add it to the end.
+      // Important: since it's been removed and re-added, you have to reset the
+      // click event.
+      var mergedEl = $(color.el);
+      mergedEl.remove();
+      var pool = this;
+      mergedEl.click(function() {
+        pool.colorClick(this);
+      });
+      this.content.append(mergedEl);
+    }
     
     // Draw new image data to the manipulation canvas
     this.manipContext.imageSmoothingEnabled = false;
@@ -226,15 +308,54 @@ Pool.prototype.mergeColors = function() {
 
 
 
-// Uses stack of colors to generate new imageData
-// @param changeData: only alter color values if true
-Pool.prototype.generateNewImageData = function(colorStack, changeData) {
-  stackHeight = colorStack.length;
+// Called when un-merging a specific color.
+Pool.prototype.unmergeColor = function() {
+  // This shouldn't ever be more than one item, unless someone is editing the DOM.
+  var selectedMerged = $(".merged.selected");
 
-  // Find the colors we'll be going to -> from
-  var source = colorStack[0];
-  var colorsToMerge = colorStack.splice(1, stackHeight -1 );
+  // Only operate if a single merged color is selected.
+  if (selectedMerged.length == 1) {
+    var colorEl = selectedMerged[0];
 
+    var r = colorEl.getAttribute("r"),
+        g = colorEl.getAttribute("g"),
+        b = colorEl.getAttribute("b"),
+        a = colorEl.getAttribute("a");
+
+    var color = this.getColor(r, g, b, a);
+
+    if (color.merged) {
+      color.setUnmerged();
+      var tempColor = new Color(color.r, color.g, color.b, color.a);
+      tempColor.addLocations(color.locationList());
+
+      var imageData = this.generateNewImageData(color, [tempColor]);
+    
+      // Draw new image data to the manipulation canvas
+      this.manipContext.imageSmoothingEnabled = false;
+      this.manipContext.putImageData(imageData, 0, 0);
+
+      // Draw the updated display
+      this.drawDisplay(this.manipCanvas, this.displayCanvas, this.displayContext);
+
+      // Clear the color click stack
+      this.clearColorClickStack();
+      this.unmergeButton.addClass("disabled");
+
+      $(colorEl).remove();
+      var pool = this;
+      $(colorEl).click(function() {
+        pool.colorClick(this);
+      });
+      this.content.prepend(colorEl);
+    }
+  }
+}
+
+
+
+// Uses source colors and colors to be merged to generate new image data
+Pool.prototype.generateNewImageData = function(source, colorsToMerge) {
   // Find original image dimensions
   var imageWidth = this.manipCanvas.width;
   var imageHeight = this.manipCanvas.height;
@@ -245,10 +366,13 @@ Pool.prototype.generateNewImageData = function(colorStack, changeData) {
   for(var n = 0; n < colorsToMerge.length; n++) {
     var mergeFrom = colorsToMerge[n];
 
+    var locs = mergeFrom.locationList();
+    console.log(mergeFrom.locations);
+    console.log(locs);
     // Iterate through all locations of departing color
-    for (var i = 0; i < mergeFrom.locations.length; i++) {
-      var x = mergeFrom.locations[i][0],
-          y = mergeFrom.locations[i][1];
+    for (var i = 0; i < locs.length; i++) {
+      var x = locs[i][0],
+          y = locs[i][1];
 
       // Calculate the beginning of our values in the data array
       var calcIndex = (x * 4) + (4 * imageWidth * y);
@@ -256,21 +380,6 @@ Pool.prototype.generateNewImageData = function(colorStack, changeData) {
       data[calcIndex] = source.r;
       data[calcIndex + 1] = source.g;
       data[calcIndex + 2] = source.b;
-
-      if (changeData) {
-        // Add the location to the new source color
-        source.addLocation(x, y);
-      }
-    }
-
-    if (changeData) {
-      // Remove the merged color from our color collection
-      this.colors[mergeFrom.r][mergeFrom.g][mergeFrom.b] = undefined;
-      // Let the color set up for merged state
-      mergeFrom.setMerged();
-      // Remove color element from where it is in the flow and add it to the end
-      $(mergeFrom.el).remove()[0];
-      this.content.append(mergeFrom.el);
     }
   }
   return imageData;
@@ -314,11 +423,16 @@ Pool.prototype.setUpToggleDisplay = function() {
   this.toggleManipCanvas.width = this.manipCanvas.width;
   this.toggleManipCanvas.height = this.manipCanvas.height;
 
-  // Make a copy of the selected colors array.
-  var selectedColors = this.colorClickStack.slice(0);
-  // Use this array (the suggested merge) to generate imageData.
-  // IMPORTANT: pass false so that our suggested merge isn't permanent.
-  var imageData = this.generateNewImageData(selectedColors, false);
+  // Make a copy using splice(0) or you change the original array
+  var tempClickStack = [];
+  for (var i = 0; i < this.colorClickStack.length; i++) {
+    tempClickStack.push(this.colorClickStack[i]);
+  }
+  // Find source color and colors to be merged
+  var sourceColor = tempClickStack[0];
+  var mergedColors = tempClickStack.splice(1, tempClickStack.length - 1);
+  // Use these colors (the suggested merge) to generate imageData.
+  var imageData = this.generateNewImageData(sourceColor, mergedColors);
 
   // Draw new image data to the toggle's manipulation canvas.
   this.toggleManipContext.imageSmoothingEnabled = false;
@@ -489,7 +603,7 @@ Pool.prototype.updateComparisonChart = function() {
     var startingAngle = 0;
     var arcSize = (2 * Math.PI) / (colorNum - 1);
 
-    var drawColors = this.colorClickStack.slice(0).reverse();
+    var drawColors = this.colorClickStack.splice(0).reverse();
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     for (var i = 0; i < colorNum; i++) {
@@ -562,7 +676,7 @@ Pool.prototype.clearColorClickStack = function() {
 
 
 
-// Called upon intialization, sets up click handlers
+// Called upon intialization, sets up click handlers.
 Pool.prototype.initializeClickEvents = function() {
   var pool = this;
   $(".image-button").click(function() {
@@ -571,21 +685,35 @@ Pool.prototype.initializeClickEvents = function() {
   });
 
   document.onkeydown = function(e) {
-    // When "m" is pressed, merge colors
+    // When "m" is pressed, merge colors.
     if (e.which == "77" && !pool.toggleMode) { 
       pool.mergeColors();
+
+    // When "t" is pressed, toggle toggle mode.
     } else if (e.which == "84") {
       pool.toggleToggleMode();
+
+    // When we're in toggle mode and the spacebar is pressed.
     } else if (e.which == "32" && pool.toggleMode) {
       pool.toggleChange();
+
+    // The escape key
     } else if (e.which == "27") {
+      // If we're in toggle mode, toggle it off.
       if (pool.toggleMode) {
         pool.toggleToggleMode();
+      // Otherwise, clear the color click stack.
       } else {
         pool.clearColorClickStack();
       }
+
+    // When "c" is pressed, toggle compare mode.
     } else if (e.which == "67") {
       pool.toggleCompareMode();
+
+    // When "u" is pressed, unmerge a color.
+    } else if (e.which == "85") {
+      pool.unmergeColor();
     }
   }
 
@@ -595,6 +723,10 @@ Pool.prototype.initializeClickEvents = function() {
 
   $("#toggle").click(function() {
     pool.toggleToggleMode();
+  });
+
+  $("#unmerge").click(function() {
+    pool.unmergeColor();
   });
 
   $("#compare").click(function() {
@@ -633,9 +765,3 @@ window.onload = function() {
   // Declaerd globally for debugging purposes
   pool = new Pool();
 }
-
-/* for (var key in colors) {
-  if (colors.hasOwnProperty(key)) {
-    console.log(key + " -> " + colors[key]);
-  }
-} */

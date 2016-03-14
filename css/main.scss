@@ -72,6 +72,10 @@ body {
   background-image: url(../img/icons/merge.png);
 }
 
+.icon-unmerge {
+  background-image: url(../img/icons/unmerge.png);
+}
+
 .icon-toggle {
   background-image: url(../img/icons/toggle.png);
 }
@@ -257,13 +261,9 @@ body {
       width: 70px - 6px;
       height: 70px - 6px;
       border: 3px #444 solid;
-      .color {
-      }
     }
 
     &.merged {
-      cursor: default;
-
       .color {
         height: calc(100% - 10px);
         border-top-left-radius: 5px;
@@ -272,6 +272,18 @@ body {
 
         .color-content {
           padding-top: 22px;
+        }
+      }
+    }
+
+    &.merged.selected {
+      .color {
+        height: calc(100% - 7px);
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+
+        .color-content {
+          padding-top: 19px;
         }
       }
     }

@@ -703,6 +703,8 @@ Pool.prototype.initializeClickEvents = function() {
       if (pool.toggleMode) {
         pool.toggleToggleMode();
       // Otherwise, clear the color click stack.
+      } else if ($(".overlay").css("display") == "block") {
+        $(".overlay").slideUp(350);
       } else {
         pool.clearColorClickStack();
       }
@@ -714,6 +716,14 @@ Pool.prototype.initializeClickEvents = function() {
     // When "u" is pressed, unmerge a color.
     } else if (e.which == "85") {
       pool.unmergeColor();
+
+    // When "s" is pressed, open settings
+    } else if (e.which == "83") {
+      if ($(".overlay").css("display") == "block") {
+        $(".overlay").slideUp(350);
+      } else {
+        $(".overlay").slideDown(350);
+      }
     }
   }
 

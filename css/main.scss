@@ -5,6 +5,10 @@
   padding: 0;
 }
 
+button:focus {
+  outline: none;
+}
+
 header {
   position: relative;
   height: 60px;
@@ -13,6 +17,7 @@ header {
 
   .logo {
     padding: 9px 0 0 10px;
+    margin: 0;
     font: 35px Bitter;
     color: #eee;
   }
@@ -356,7 +361,6 @@ body {
 
     background-color: #ddd;
     width: 600px;
-    height: 300px;
     border-radius: 5px;
 
     color: #222;
@@ -367,7 +371,6 @@ body {
       width: 100%;
       height: 40px;
       padding-top: 8px;
-      margin-bottom: 20px;
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
 
@@ -385,6 +388,56 @@ body {
         height: 25px;
         background-repeat: no-repeat;
         background-size: 25px 25px;
+      }
+    }
+
+    .settings-nav {
+      width: 100%;
+      height: 30px;
+      text-align: center;
+      padding: 12px 0 10px 0;
+      background-color: #bbb;
+
+      a {
+        padding: 5px 10px;
+        margin: 0 5px;
+        border: none;
+        border-radius: 5px;
+        background-color: #222;
+
+        color: #bbb;
+        transition: color .2s ease-in-out;
+
+        &:hover {
+          color: #eee;
+        }
+      }
+    }
+
+    .settings-content {
+      height: 500px;
+      overflow-y: auto;
+      padding: 10px 20px 20px;
+
+      h2, p {
+        margin: 10px 0;
+      }
+    }
+
+    .display-gif {
+      margin: 10px auto 5px;
+
+      &.color-select {
+        width: 350px;
+      }
+
+      &.open-panel {
+        width: 250px;
+      }
+
+      img {
+        width: 100%;
+        border-radius: 5px;
       }
     }
   }

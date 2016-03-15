@@ -14,13 +14,41 @@
         Information + Settings
         <div class="icon-button icon-close-light" id="close"></div>
       </div>
-      settings here
+      <div class="settings-nav">
+        <a id="" style="color: #eee">how to use</a>
+        <a id="">buttons + shortcuts</a>
+        <a id="">settings</a>
+      </div>
+      <div class="settings-content" id="how-to-use">
+        <h2>How to use Pixel Pool</h2>
+        <p>
+          Pixel Pool helps you remove color redundancies in your pixel art. Often you'll find that when you intend for two (or more) colors to be the same, they're instead off by a few RGB points. Pixel Pool helps you find pixels that are visually identical in color and combine them to the exact same value.
+        </p>
+        <p>
+          It can also be useful in cases where you're using a wide variation of colors and want to combine and simplify.
+        </p>
+        <h2>Getting Started</h2>
+        <p>
+          After you upload your image, Pixel Pool will run through every pixel and displays all the colors it finds as swatches. To get started, select at least two swatches. The first swatch you select will be the source -- any swatch you select after will be merged into the source color.
+        </p>
+        <div class="display-gif color-select"><img src="img/example/color-select.gif"></div>
+        <p>
+          If you'd like to see your selected colors side by side, open the comparison panel (you can also use the "c" key as a shortcut).
+        <p>
+        <div class="display-gif open-panel"><img src="img/example/open-panel.gif"></div>
+        <p>
+          It can also be helpful to preview the change and toggle between the current image and proposed change. To do so, you can enter toggle mode (you can also use the "t" key as a shortcut).
+        </p>
+      </div>
+      <div class="settings-content" id="buttons-shortcuts" style="display:none">
+        Pixel Pool helps you find pixels that have visually identical colors (perhaps off by a few rgb points here and there) and combine them to the exact same value. Pixel Pool will run through every pixel of your image and display the colors as swatches. To get started, select at least two swatches. The first swatch you select will be the source -- any swatch you selected after are to be merged into the source color. 
+      </div>
     </div>
   </div>
   <header>
-    <div class="logo">
+    <h1 class="logo">
       Pixel Pool
-    </div>
+    </h1>
     <div class="image-controls">
       <button class="image-button"><img src="img/mercury.png"></button>
       <button class="image-button"><img src="img/venus.png"></button>

@@ -2,6 +2,9 @@
   margin: 0;
   padding: 0; }
 
+button:focus {
+  outline: none; }
+
 header {
   position: relative;
   height: 60px;
@@ -9,6 +12,7 @@ header {
   background-color: #666; }
   header .logo {
     padding: 9px 0 0 10px;
+    margin: 0;
     font: 35px Bitter;
     color: #eee; }
   header .image-controls {
@@ -255,7 +259,6 @@ body {
     transform: translate(-50%, -50%);
     background-color: #ddd;
     width: 600px;
-    height: 300px;
     border-radius: 5px;
     color: #222;
     font: 14px Bitter; }
@@ -264,7 +267,6 @@ body {
       width: 100%;
       height: 40px;
       padding-top: 8px;
-      margin-bottom: 20px;
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
       background-color: #666;
@@ -280,5 +282,36 @@ body {
         height: 25px;
         background-repeat: no-repeat;
         background-size: 25px 25px; }
+    .overlay .settings-panel .settings-nav {
+      width: 100%;
+      height: 30px;
+      text-align: center;
+      padding: 12px 0 10px 0;
+      background-color: #bbb; }
+      .overlay .settings-panel .settings-nav a {
+        padding: 5px 10px;
+        margin: 0 5px;
+        border: none;
+        border-radius: 5px;
+        background-color: #222;
+        color: #bbb;
+        transition: color .2s ease-in-out; }
+        .overlay .settings-panel .settings-nav a:hover {
+          color: #eee; }
+    .overlay .settings-panel .settings-content {
+      height: 500px;
+      overflow-y: auto;
+      padding: 10px 20px 20px; }
+      .overlay .settings-panel .settings-content h2, .overlay .settings-panel .settings-content p {
+        margin: 10px 0; }
+    .overlay .settings-panel .display-gif {
+      margin: 10px auto 5px; }
+      .overlay .settings-panel .display-gif.color-select {
+        width: 350px; }
+      .overlay .settings-panel .display-gif.open-panel {
+        width: 250px; }
+      .overlay .settings-panel .display-gif img {
+        width: 100%;
+        border-radius: 5px; }
 
 /*# sourceMappingURL=main.css.map */

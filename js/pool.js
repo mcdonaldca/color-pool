@@ -38,7 +38,7 @@ function Pool() {
   this.numberMode = false;
 
   // Display initial image
-  this.setImageWithSrc("img/venus.png");
+  this.setImageWithSrc("img/example.png");
 
   // Tracks the order of items clicked in the stack
   this.colorClickStack = [];
@@ -749,39 +749,42 @@ Pool.prototype.initializeClickEvents = function() {
 
   document.onkeydown = function(e) {
     // When "m" is pressed, merge colors.
-    if (e.which == "77" && !pool.toggleMode) { 
+    if (e.which == 77 && !pool.toggleMode) { 
       pool.mergeColors();
 
     // When "t" is pressed, toggle toggle mode.
-    } else if (e.which == "84") {
+    } else if (e.which == 84) {
       pool.toggleToggleMode();
 
     // When we're in toggle mode and the spacebar is pressed.
-    } else if (e.which == "32" && pool.toggleMode) {
+    } else if (e.which == 32 && pool.toggleMode) {
       pool.toggleChange();
+      // Don't click on buttons, space bar. I hate you.
+      e.preventDefault();
 
     // The escape key
-    } else if (e.which == "27") {
+    } else if (e.which == 27) {
       // If we're in toggle mode, toggle it off.
       if (pool.toggleMode) {
         pool.toggleToggleMode();
-      // Otherwise, clear the color click stack.
+      // If the overlay is visible
       } else if ($(".overlay").css("display") == "block") {
         $(".overlay").slideUp(350);
+      // Otherwise, clear the color click stack.
       } else {
         pool.clearColorClickStack();
       }
 
     // When "c" is pressed, toggle compare mode.
-    } else if (e.which == "67") {
+    } else if (e.which == 67) {
       pool.toggleCompareMode();
 
     // When "u" is pressed, unmerge a color.
-    } else if (e.which == "85") {
+    } else if (e.which == 85) {
       pool.unmergeColor();
 
     // When "s" is pressed, open settings.
-    } else if (e.which == "83") {
+    } else if (e.which == 83) {
       if ($(".overlay").css("display") == "block") {
         $(".overlay").slideUp(350);
       } else {
@@ -789,7 +792,7 @@ Pool.prototype.initializeClickEvents = function() {
       }
 
     // When "n" is pressed, toggle number mode.
-    } else if (e.which == "78") {
+    } else if (e.which == 78) {
       pool.toggleNumberMode();
     }
   }
